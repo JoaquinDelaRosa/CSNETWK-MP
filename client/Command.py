@@ -33,4 +33,4 @@ class Msg(Command):
     def __init__(self, handle : str, message : str):
         self.handle = handle
         self.message = message 
-        Command.__Init__(self, "msg")
+        Command.__init__(self, "msg")
