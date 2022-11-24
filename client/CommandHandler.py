@@ -1,17 +1,17 @@
 from ClientSocket import *
-from CommandResponse import *
 from Command import *
+from CommandResponse import *
+from Logger import *
 
 class CommandHandler: 
-    client_socket = ClientSocket()
 
-    def __init__(self):
-        pass 
+    def __init__(self, logger : Logger):
+        self.client_socket = ClientSocket()
+        self.logger = logger
 
     def process(self, command : Command):
-        payload = command.payload
-
-        if (payload["command"] == "join"):
-            return self.client_socket.set_state(ip_address=payload["server_ip_address"], port=payload["port"])
+        if (isinstance(command, Join)):
+            join : Join = command
+            return self.client_socket.set_state(ip_address= join.server_ip_address, port = join.port)
 
     
