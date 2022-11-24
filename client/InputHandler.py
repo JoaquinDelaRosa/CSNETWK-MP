@@ -1,14 +1,15 @@
-from .InputResult import *
-from .Utils import *
+from Command import *
+from Logger import *
+from Utils import *
 
 class InputHandler: 
-    def __init__(self):
-        pass 
+    def __init__(self, logger : Logger):
+        self.logger = logger
     
     def parse(self, str : str):
         toks = str.split(' ')
         if (len(toks) == 0):
-            return COMMAND_NOT_FOUND_ERROR
+            return self.__handle_command_not_found_error__()
 
         command = toks[0]
         if (command == "/join"):
@@ -24,80 +25,72 @@ class InputHandler:
         if (command == "/?"):
             return self.__parse_help_command__(toks)
 
-        return COMMAND_NOT_FOUND_ERROR
+        return self.__handle_command_not_found_error__()
     
+    def __handle_command_not_found_error__(self):
+        self.logger.log("Error: Command Not Found.")
+        return None
+        
+    def __handle_bad_syntax_error__(self):
+        self.logger.log("Command parameters do not match or is not allowed.")
+        return None
+
     def __parse_join_command__(self, toks : list):
         if (len(toks) != 3):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
         
         server_ip_address = toks[1]
         port = toks[2]
 
-        if (not is_valid_ip_address(server_ip_address)):
-            return COMMAND_BAD_SYNTAX_ERROR
+        if (not is_valid_ip_address(server_ip_address) or not(port.isdigit())):
+            return self.__handle_bad_syntax_error__()
 
-        return InputResult( "" ,{
-            "command": "join",
-            "server_ip_address": server_ip_address,
-            "port": port
-        })
+        return Join(server_ip_address=server_ip_address, port=int(port))
 
     def __parse_leave_command__(self, toks : list):
         if (len(toks) != 1):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
         
-        return InputResult("", {
-            "command": "leave"
-        })
+        return Leave()
     
     def __parse_register_command__(self, toks : list):
         if (len(toks) != 2):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
 
         handle = toks[1]
         if (len(handle) == 0):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
 
-        return InputResult("", {
-            "command": "register",
-            "handle": handle
-        })
+        return Register(handle=handle)
 
     def __parse_all_command__(self, toks: list):
         if (len(toks) < 2):
-            return COMMAND_BAD_SYNTAX_ERROR 
+            return self.__handle_bad_syntax_error__() 
 
         message = ''.join(toks[1:])
 
         if (len(message) == 0):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
 
-        return InputResult("", {
-            "command": "all",
-            "message": message
-        })
+        return All(message)
 
     def __parse_msg_command__(self, toks: list):
         if (len(toks) < 3):
-            return COMMAND_BAD_SYNTAX_ERROR 
+            return self.__handle_bad_syntax_error__() 
 
         handle = toks[1]
         message = ''.join(toks[2:])
 
         if (len(handle) == 0 or len(message) == 0):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
 
-        return InputResult("", {
-            "command": "msg",
-            "handle": handle,
-            "message": message
-        })
+        return Msg(handle, message)
 
     def __parse_help_command__(self, toks: list):
         if (len(toks) != 1):
-            return COMMAND_BAD_SYNTAX_ERROR
+            return self.__handle_bad_syntax_error__()
 
-        return InputResult("""
+        self.logger.log("""
             +------------------------------+-----------------------------+
             | Input Syntax                 | Description                 |
             +------------------------------+-----------------------------+
@@ -118,3 +111,4 @@ class InputHandler:
             | /?                           | Request command help        |
             +------------------------------+-----------------------------+
         """)
+        return None
