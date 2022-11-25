@@ -17,8 +17,7 @@ class CommandHandler:
     def process(self, command : Command):
         if (isinstance(command, Join)):
             join : Join = command
-            self.client_socket.set_state(ip_address= join.server_ip_address, port = join.port)
-            self.client_socket.send({'command' : 'join'})
+            self.client_socket.join(ip_address= join.server_ip_address, port = join.port)
         
 
     

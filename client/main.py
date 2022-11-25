@@ -12,14 +12,15 @@ def input_thread(client_socket: ClientSocket):
     command_handler = CommandHandler(logger=logger, client_socket=client_socket)
 
     while(True):
-        command = input("Command: ")
+        command = input()
         result : Command = input_handler.parse(command)
         command_handler.process(result)
 
 
 
 def main(): 
-    socket = ClientSocket()
+    logger = Logger()
+    socket = ClientSocket(logger)
     t1 = threading.Thread(target=input_thread, args=(socket,))
     t2 = threading.Thread(target=socket.listen,)
 
