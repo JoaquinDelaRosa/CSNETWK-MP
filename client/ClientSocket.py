@@ -1,6 +1,7 @@
 import socket
-from  CommandResponse import *
-from JSONHandler import *
+
+def encode(dict : dict) -> str:
+    return str(dict)
 
 class ClientSocket:
 
@@ -15,3 +16,11 @@ class ClientSocket:
     
     def send(self, payload):
         self.client_socket.sendto(encode(payload).encode(), (self.ip_address, self.port))
+
+    def listen(self):
+        while True:
+            try:
+                (res, addr) = self.client_socket.recvfrom(1024)
+                print(res)
+            except: 
+                pass

@@ -16,7 +16,6 @@ class ServerSocket:
         while True:
             (data, addr) = self.server_socket.recvfrom(1024)
             response = self.process(data, addr)
-
             self.server_socket.sendto(response.__bytes__(), addr)
 
     def process(self, data, addr):

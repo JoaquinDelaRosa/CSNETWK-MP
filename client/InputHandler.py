@@ -2,6 +2,11 @@ from Command import *
 from Logger import *
 from Utils import *
 
+class CommandResponse: 
+    message : str
+    def __self__(self, message : str):
+        self.message = message
+        
 class InputHandler: 
     def __init__(self, logger : Logger):
         self.logger = logger
