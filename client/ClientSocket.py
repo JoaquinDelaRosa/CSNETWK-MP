@@ -13,18 +13,13 @@ class ClientSocket:
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.client_socket.settimeout(1)
-        self.ip_address = ""
-        self.port = 0
 
     def join(self, ip_address, port):
-        self.ip_address = ip_address
-        self.port = port
-
-        self.send({'command' : 'join'})
+        self.send(ip_address, port, {'command' : 'join'})
         self.__confirm_connection__()
     
-    def send(self, payload):
-        self.client_socket.sendto(encode(payload).encode(), (self.ip_address, self.port))
+    def send(self, ip_address, port, payload):
+        self.client_socket.sendto(encode(payload).encode(), (ip_address, port))
 
     def listen(self):
         while True:
