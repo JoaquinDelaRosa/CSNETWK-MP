@@ -2,6 +2,7 @@ import socket
 
 from CommandHandler import *
 from Configs import *
+from ServerState import *
 
 class ServerSocket:
 
@@ -10,6 +11,7 @@ class ServerSocket:
         self.server_socket.bind((IP_ADDRESS, PORT_NUMBER))
 
         self.command_handler = CommandHandler()
+        self.server_state = ServerState()
 
     def listen(self):
         print("Listening...")

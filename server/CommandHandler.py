@@ -26,6 +26,13 @@ class CommandHandler:
     def __process_command__(self, command : str, decoded : dict) -> Response:
         if (command == "join"):
             return self.__handle_join__(decoded)
+        elif (command == "leave"):
+            return self.__handle_leave__(decoded)
+
+        return Response("Unknown command recieved")
     
     def __handle_join__(self, decoded : dict):
         return Response('Connection to the Message Board Server is successful!')
+    
+    def __handle_leave__(self, decoded: dict):
+        return Response("Connection closed. Thank you!")
