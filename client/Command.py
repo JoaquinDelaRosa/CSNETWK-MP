@@ -21,6 +21,12 @@ class Register(Command):
     def __init__(self, handle : str):
         self.handle = handle
         Command.__init__(self, "register")
+    
+    def get_payload(self):
+        return {
+            "command": "register",
+            "handle": self.handle
+        }
 
 class All(Command):
 

@@ -24,6 +24,7 @@ class CommandHandler:
 
         elif (isinstance(command, Register)):
             register : Register = command
+            self.client_socket.send(register.get_payload())
         
 
     

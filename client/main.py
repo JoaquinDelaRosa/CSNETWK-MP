@@ -22,13 +22,9 @@ def main():
     logger = Logger()
     socket = ClientSocket(logger)
     t1 = threading.Thread(target=input_thread, args=(socket,))
-    t2 = threading.Thread(target=socket.listen,)
-
     t1.start()
-    t2.start()
-
+    
     t1.join()
-    t2.join()
 
 if __name__ == "__main__":
     main()

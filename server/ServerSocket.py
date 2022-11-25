@@ -10,8 +10,8 @@ class ServerSocket:
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind((IP_ADDRESS, PORT_NUMBER))
 
-        self.command_handler = CommandHandler()
         self.server_state = ServerState()
+        self.command_handler = CommandHandler(self.server_state)
 
     def listen(self):
         print("Listening...")
