@@ -1,3 +1,5 @@
+import ast 
+
 def is_valid_ip_address(ip : str) -> bool :
     octs = ip.split('.')
     if (len(octs) != 4):
@@ -11,3 +13,9 @@ def is_valid_ip_address(ip : str) -> bool :
             return False
 
     return True
+
+def get_response_message(res : bytes ) -> str:
+    decoded = ast.literal_eval(res.decode())
+    if (not "message" in decoded):
+        return ""
+    return decoded["message"]
