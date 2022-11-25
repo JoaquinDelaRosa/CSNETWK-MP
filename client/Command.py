@@ -33,6 +33,12 @@ class All(Command):
     def __init__(self, message : str):
         self.message = message 
         Command.__init__(self, "all")
+    
+    def get_payload(self):
+        return {
+            "command": "all",
+            "handle": self.message
+        }
 
 class Msg(Command):
 

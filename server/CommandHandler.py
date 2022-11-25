@@ -20,18 +20,20 @@ class CommandHandler:
 
     def process(self, data : bytes) -> Response:
         decoded : dict= ast.literal_eval(data.decode())
-        if (not "command" in decoded):
+        if not "command" in decoded:
             return Response("Error: Bad JSON received")
 
         return self.__process_command__(decoded["command"], decoded)
 
     def __process_command__(self, command : str, decoded : dict) -> Response:
-        if (command == "join"):
+        if command == "join":
             return self.__handle_join__(decoded)
-        elif (command == "leave"):
+        elif command == "leave":
             return self.__handle_leave__(decoded)
-        elif (command == "register"):
+        elif command == "register":
             return self.__handle_register__(decoded)
+        elif command == "all":
+            return self.__handle_all__(decoded)
 
         return Response("Unknown command recieved")
     
@@ -42,7 +44,7 @@ class CommandHandler:
         return Response("Connection closed. Thank you!")
 
     def __handle_register__(self, decoded : dict):
-        if (not "handle" in decoded):
+        if not "handle" in decoded:
             return Response("Error: Received object is in bad form. Expecting 'handle' as a keyword")
 
         handle = decoded["handle"]
@@ -50,3 +52,6 @@ class CommandHandler:
             return Response("Welcome " + handle)
 
         return Response("Error: Registration failed. Handle or alias already exists.")
+    
+    def __handle_all__(self, decoded) : 
+        pass

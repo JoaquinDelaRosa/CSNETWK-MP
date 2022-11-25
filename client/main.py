@@ -11,7 +11,7 @@ def input_thread(client_socket: ClientSocket):
     input_handler = InputHandler(logger=logger)
     command_handler = CommandHandler(logger=logger, client_socket=client_socket)
 
-    while(True):
+    while True:
         command = input()
         result : Command = input_handler.parse(command)
         command_handler.process(result)
@@ -23,7 +23,7 @@ def main():
     socket = ClientSocket(logger)
     t1 = threading.Thread(target=input_thread, args=(socket,))
     t1.start()
-    
+
     t1.join()
 
 if __name__ == "__main__":

@@ -15,16 +15,18 @@ class CommandHandler:
         self.logger = logger
 
     def process(self, command : Command):
-        if (isinstance(command, Join)):
+        if isinstance(command, Join):
             join : Join = command
             self.client_socket.join(ip_address= join.server_ip_address, port = join.port)
 
-        elif (isinstance(command, Leave)):
+        elif isinstance(command, Leave):
             self.client_socket.leave()
 
-        elif (isinstance(command, Register)):
+        elif isinstance(command, Register):
             register : Register = command
             self.client_socket.send(register.get_payload())
         
-
+        elif isinstance(command, All):
+            all: All = command
+            self.client_socket.send(all.get_payload())
     
