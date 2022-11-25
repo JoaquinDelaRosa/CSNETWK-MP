@@ -34,14 +34,16 @@ class ClientSocket:
             self.__confirm_disconnection__()
     
     def send(self, payload):
-        if self.connected_ip_address is None or self.connected_port is None:
+        if payload is None or self.connected_ip_address is None or self.connected_port is None:
             self.logger.log("Error: Request failed. Please connect to the server first.")
+            return 
 
         self.client_socket.sendto(encode(payload).encode(), (self.connected_ip_address, self.connected_port))
 
     def listen(self):
-        self.output_thread = threading.Thread(target=self.__listen__)
-        self.output_thread.start()
+        if self.output_thread is None:
+            self.output_thread = threading.Thread(target=self.__listen__)
+            self.output_thread.start()
 
     def __listen__(self):
         while not self.connected_ip_address is None and not self.connected_port is None : 
@@ -59,7 +61,7 @@ class ClientSocket:
             self.__update_to_connect_state__(addr)
             self.listen()
 
-        except TimeoutError:
+        except socket.timeout:
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
     
@@ -69,7 +71,7 @@ class ClientSocket:
             self.logger.log(get_response_message(res))
             self.__update_to_disconnect_state__()
 
-        except TimeoutError:
+        except socket.timeout:
             self.logger.log("Request Timed Out")
 
     def __update_to_connect_state__(self, addr):
@@ -79,3 +81,4 @@ class ClientSocket:
     def __update_to_disconnect_state__(self):
         self.connected_ip_address = None 
         self.connected_port = None
+        self.output_thread = None
