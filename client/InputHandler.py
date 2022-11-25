@@ -8,6 +8,7 @@ class InputHandler:
         self.logger = logger
     
     def parse(self, str : str):
+        str = str.strip()
         toks = str.split(' ')
         if (len(toks) == 0):
             return self.__handle_command_not_found_error__()
