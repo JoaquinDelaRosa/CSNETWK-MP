@@ -18,19 +18,22 @@ class ClientSocket:
         self.connected_ip_address = None 
         self.connected_port = None
 
-    def join(self, ip_address, port):
-        self.send(ip_address, port, {'command' : 'join'})
+    def join(self, ip_address : str, port : int):
+        self.connected_ip_address = ip_address
+        self.connected_port = port
+
+        self.send({'command' : 'join'})
         self.__confirm_connection__()
 
     def leave(self):
         if self.connected_ip_address is None or self.connected_port is None:
             self.logger.log("Error: Disconnection failed. Please connect to the server first.")
         else: 
-            self.send(self.connected_ip_address, self.connected_port, {'command': 'leave'} )
+            self.send({'command': 'leave'} )
             self.__confirm_disconnection__()
     
-    def send(self, ip_address, port, payload):
-        self.client_socket.sendto(encode(payload).encode(), (ip_address, port))
+    def send(self, payload):
+        self.client_socket.sendto(encode(payload).encode(), (self.connected_ip_address, self.connected_port))
 
     def listen(self):
         pass
@@ -45,6 +48,8 @@ class ClientSocket:
 
         except TimeoutError:
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
+            self.connected_ip_address = None
+            self.connected_port = None 
     
     def __confirm_disconnection__(self):
         try:

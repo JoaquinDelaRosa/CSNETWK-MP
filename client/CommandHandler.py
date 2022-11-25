@@ -18,9 +18,12 @@ class CommandHandler:
         if (isinstance(command, Join)):
             join : Join = command
             self.client_socket.join(ip_address= join.server_ip_address, port = join.port)
+
         elif (isinstance(command, Leave)):
-            leave : Leave = command 
             self.client_socket.leave()
+
+        elif (isinstance(command, Register)):
+            register : Register = command
         
 
     
