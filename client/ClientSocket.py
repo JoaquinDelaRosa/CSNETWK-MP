@@ -1,5 +1,6 @@
 import socket
 from  CommandResponse import *
+from JSONHandler import *
 
 class ClientSocket:
 
@@ -11,5 +12,6 @@ class ClientSocket:
     def set_state(self, ip_address, port):
         self.ip_address = ip_address
         self.port = port
-        
-        self.client_socket.sendto("Hello World".encode(), (ip_address, port))
+    
+    def send(self, payload):
+        self.client_socket.sendto(encode(payload).encode(), (self.ip_address, self.port))
