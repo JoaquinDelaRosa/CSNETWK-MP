@@ -17,9 +17,10 @@ class ServerSocket:
         print("Listening...")
         while True:
             (data, addr) = self.server_socket.recvfrom(1024)
-            response = self.process(data, addr)
-            for target in response.targets: 
-                self.server_socket.sendto(response.__bytes__(), target)
+            responses = self.process(data, addr)
+            for response in responses:
+                for target in response.targets: 
+                    self.server_socket.sendto(response.__bytes__(), target)
 
     def process(self, data, addr):
         print("Received from IP" + str(addr[0]) + " port=" + str(addr[1]))

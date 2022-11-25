@@ -46,3 +46,10 @@ class Msg(Command):
         self.handle = handle
         self.message = message 
         Command.__init__(self, "msg")
+    
+    def get_payload(self):
+        return {
+            "command": "msg",
+            "handle": self.handle,
+            "message": self.message
+        }

@@ -29,4 +29,8 @@ class CommandHandler:
         elif isinstance(command, All):
             all: All = command
             self.client_socket.send(all.get_payload())
+        
+        elif isinstance(command, Msg):
+            msg : Msg = command 
+            self.client_socket.send(msg.get_payload())
     
