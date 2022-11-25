@@ -1,11 +1,16 @@
-class ServerState:
-    handles: dict = {}
+class ClientModel: 
+    def __init__(self, handle: str):
+        self.handle = handle
+        pass 
 
-    def try_register_handle(self, handle : str) -> bool:
+class ServerState:
+    clients: dict = {}
+
+    def try_register_handle(self, handle : str, addr: tuple) -> bool:
         if self.is_recognized_handle(handle):
             return False 
 
-        self.handles[handle] = {}            
+        self.clients[addr] = ClientModel(handle)
         return True
     
     def is_recognized_handle(self, handle: str) -> bool:
@@ -13,5 +18,7 @@ class ServerState:
         if len(p_handle) == 0:
             return False 
         
-        return p_handle in self.handles
+        return p_handle in [x.handle for x in self.clients.values()]
     
+    def get_clients(self) -> dict:
+        return self.clients

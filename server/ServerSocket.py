@@ -18,11 +18,12 @@ class ServerSocket:
         while True:
             (data, addr) = self.server_socket.recvfrom(1024)
             response = self.process(data, addr)
-            self.server_socket.sendto(response.__bytes__(), addr)
+            for target in response.targets: 
+                self.server_socket.sendto(response.__bytes__(), target)
 
     def process(self, data, addr):
         print("Received from IP" + str(addr[0]) + " port=" + str(addr[1]))
         print(data)
 
-        return self.command_handler.process(data)
+        return self.command_handler.process(data, addr)
         

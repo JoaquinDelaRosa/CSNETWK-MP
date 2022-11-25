@@ -37,7 +37,7 @@ class All(Command):
     def get_payload(self):
         return {
             "command": "all",
-            "handle": self.message
+            "message": self.message
         }
 
 class Msg(Command):
