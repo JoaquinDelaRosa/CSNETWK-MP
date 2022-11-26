@@ -3,7 +3,7 @@
 Additional Features implemented:
 
 ## Channel feature
-```bash
+```
 /createc <channel_name>              create a channel in the server.
 
 /invitec <handle>                    invite a user to the channel. Can only be done by channel admins.
@@ -17,8 +17,10 @@ Additional Features implemented:
 
 /leavec <channel_name>               leave a channel if and only if the user has joined
 /deletec <channel_name>              delete a channel. Can only be done by channel admins.
+```
 
 ## Block feature
+```
 /block <handle>                      ignores any incoming messages from <handle>. <handle> will be notified that they are blocked by the user.
 /unblock <handle>                    unblocks <handle> if they were blocked by the user. 
 ```
