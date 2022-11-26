@@ -20,6 +20,10 @@ class ClientSocket:
         self.output_thread = None
 
     def join(self, ip_address : str, port : int):
+        if not self.connected_ip_address is None or not self.connected_port is None:
+            self.logger.log("Already Connected to a server! Disconnect first")
+            return
+
         self.connected_ip_address = ip_address
         self.connected_port = port
 
@@ -57,7 +61,6 @@ class ClientSocket:
         try:
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
-
             self.__update_to_connect_state__(addr)
             self.listen()
 
