@@ -22,7 +22,7 @@ class ServerSocket:
                 for target in response.targets: 
                     self.server_socket.sendto(response.__bytes__(), target)
 
-    def process(self, data, addr):
+    def process(self, data, addr) -> list[Response]:
         print("Received from IP " + str(addr[0]) + " port=" + str(addr[1]))
         print(data)
 

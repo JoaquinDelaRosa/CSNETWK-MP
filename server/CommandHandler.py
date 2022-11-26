@@ -3,7 +3,7 @@ import ast
 from ServerState import *
 
 class Response: 
-    def __init__(self, message : str, targets : list):
+    def __init__(self, message : str, targets : list[tuple]):
         self.message = message
         self.targets =targets
     
@@ -29,7 +29,7 @@ class CommandHandler:
 
         return self.__process_command__(decoded["command"], decoded, addr)
 
-    def __process_command__(self, command : str, decoded : dict, addr : tuple) -> list:
+    def __process_command__(self, command : str, decoded : dict, addr : tuple) -> list[Response]:
         if command == "join":
             return self.__handle_join__(decoded, addr)
         elif command == "leave":
