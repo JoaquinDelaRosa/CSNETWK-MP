@@ -4,7 +4,7 @@ Additional Features implemented:
 
 ## Channel feature
 ```
-/createc <channel_name>              create a channel in the server.
+/createc <channel_name>              create a channel in the server. User becomes channel owner and admin.
 
 /invitec <handle>                    invite a user to the channel. Can only be done by channel admins.
 /acceptc <channel_name>              accept an invitation to a channel. Can only be done if user is invited.
@@ -16,7 +16,7 @@ Additional Features implemented:
 /msgch <channel_name> <message>      messages all members of a channel with <message>
 
 /leavec <channel_name>               leave a channel if and only if the user has joined
-/deletec <channel_name>              delete a channel. Can only be done by channel admins.
+/deletec <channel_name>              delete a channel. Can only be done by channel owner.
 ```
 
 ## Block feature
