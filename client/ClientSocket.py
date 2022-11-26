@@ -1,3 +1,4 @@
+import select
 import socket
 import threading
 
@@ -20,10 +21,6 @@ class ClientSocket:
         self.output_thread = None
 
     def join(self, ip_address : str, port : int):
-        if not self.connected_ip_address is None or not self.connected_port is None:
-            self.logger.log("Already Connected to a server! Disconnect first")
-            return
-
         self.connected_ip_address = ip_address
         self.connected_port = port
 
@@ -55,18 +52,20 @@ class ClientSocket:
                 (res, addr) = self.client_socket.recvfrom(1024)
                 self.logger.log(get_response_message(res))
             except socket.timeout:
-                pass
+                continue
     
     def __confirm_connection__(self):
         try:
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_connect_state__(addr)
-            self.listen()
 
-        except socket.timeout:
+        except socket.timeout as err:
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
+            return 
+        
+        self.listen()
     
     def __confirm_disconnection__(self):
         try:
@@ -74,8 +73,10 @@ class ClientSocket:
             self.logger.log(get_response_message(res))
             self.__update_to_disconnect_state__()
 
-        except socket.timeout:
+        except socket.timeout as err:
+            print(err)
             self.logger.log("Request Timed Out")
+            return 
 
     def __update_to_connect_state__(self, addr):
         self.connected_ip_address = str(addr[0])
