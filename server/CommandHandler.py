@@ -65,7 +65,7 @@ class CommandHandler:
         
         handle = self.server_state.get_handle_of_addr(addr)
         message = decoded["message"]
-        return [Response(handle + ": " + message, [addr for addr in self.server_state.get_clients().keys()])]
+        return [Response(handle + ": " + message, [addr for addr in self.server_state.get_all_addr()])]
     
     def __handle_msg__(self, decoded : dict, sender_addr : tuple) :
         if not "handle" in decoded:

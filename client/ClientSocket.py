@@ -54,7 +54,7 @@ class ClientSocket:
             try:
                 (res, addr) = self.client_socket.recvfrom(1024)
                 self.logger.log(get_response_message(res))
-            except TimeoutError:
+            except socket.timeout:
                 pass
     
     def __confirm_connection__(self):
