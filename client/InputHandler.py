@@ -69,7 +69,7 @@ class InputHandler:
         if len(toks) < 2:
             return self.__handle_bad_syntax_error__() 
 
-        message = ''.join(toks[1:] + ' ')
+        message = ' '.join(toks[1:])
 
         if len(message) == 0:
             return self.__handle_bad_syntax_error__()
@@ -81,7 +81,7 @@ class InputHandler:
             return self.__handle_bad_syntax_error__() 
 
         handle = toks[1]
-        message = ''.join(toks[2:])
+        message = ' '.join(toks[2:])
 
         if len(handle) == 0 or len(message) == 0:
             return self.__handle_bad_syntax_error__()
