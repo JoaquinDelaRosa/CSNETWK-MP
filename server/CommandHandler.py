@@ -147,7 +147,7 @@ class CommandHandler:
         if channel_model.is_invited(sender):
             channel_model.add_member(sender)
             return [
-                Response("> Invite to " + channel + "acknowledged. Welcome! ", [sender.addr]),
+                Response("> Invite to " + channel + " acknowledged. Welcome! ", [sender.addr]),
                 Response("> "+ sender.handle + "accepted your invite.", [receiver.addr])
             ]
 
@@ -173,8 +173,8 @@ class CommandHandler:
         if channel_model.is_invited(sender):
             channel_model.remove_from_invitees(sender)
             return [
-                Response("> Invite to " + channel + "acknowledged. Welcome! ", [sender_addr]),
-                Response("> "+ sender.handle + "accepted your invite.", [receiver.addr])
+                Response("> Invite to " + channel + " declined.", [sender_addr]),
+                Response("> "+ sender.handle + "declined your invite.", [receiver.addr])
             ]
 
         return [Response("Error: Acceptance failed.", [sender_addr])]
