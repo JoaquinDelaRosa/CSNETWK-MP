@@ -13,14 +13,17 @@ class ServerState:
         return True
     
     def try_create_channel(self, channel: str, addr: tuple) -> bool:
-        handle = self.get_handle_of_addr(addr)
-        if not self.is_recognized_handle(handle):
+        owner = self.get_client_by_addr(addr)
+        if owner == None:
+            return None 
+
+        if not self.is_recognized_handle(owner.handle):
             return False 
 
         if self.is_recognized_channel(channel):
             return False 
         
-        self.channels[channel] = ChannelModel(handle, channel)
+        self.channels[channel] = ChannelModel(owner, channel)
         return True
     
     def is_recognized_handle(self, handle: str) -> bool:
@@ -49,19 +52,29 @@ class ServerState:
     def get_all_addr(self) -> list:
         return [x.addr for x in self.clients.values()]
 
-    def get_handle_of_addr(self, addr : tuple) -> str:
+    def get_client_by_addr(self, addr : tuple) -> ClientModel:
         for x in self.clients.keys():
             (ip, port) = addr
             (_ip, _port) = self.clients[x].addr
             if ip == _ip and port == _port: 
-                return x
+                return self.clients[x]
+        
         return None
     
-    def get_addr_of_handle(self, handle : str) -> tuple:
-        return self.clients[handle].addr
+    def get_client_by_handle(self, handle : str) -> ClientModel:
+        if handle in self.clients:
+            return self.clients[handle]
+
+        return None
     
     def get_channels_list_message(self) -> str:
         channels = [c.name for c in self.channels.values()]
         channels.sort()
 
         return "Channels:\n" + "\n".join(channels)
+    
+    def get_channel_by_name(self, name: str) -> ChannelModel:
+        if name in self.channels:
+            return self.channels[name]
+        
+        return None

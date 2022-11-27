@@ -101,3 +101,25 @@ class Invitec(Command):
             "channel": self.channel_name,
             "handle": self.handle
         }
+
+class Acceptc(Command):
+    def __init__(self, channel_name : str):
+        self.channel_name = channel_name
+        Command.__init__(self, "acceptc")
+
+    def get_payload(self):
+        return {
+            "command": "acceptc",
+            "channel": self.channel_name,
+        }
+
+class Declinec(Command):
+    def __init__(self, channel_name : str):
+        self.channel_name = channel_name
+        Command.__init__(self, "declinec")
+
+    def get_payload(self):
+        return {
+            "command": "declinec",
+            "channel": self.channel_name,
+        }

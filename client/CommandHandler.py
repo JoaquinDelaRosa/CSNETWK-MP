@@ -23,5 +23,4 @@ class CommandHandler:
             self.client_socket.leave()
 
         elif not command is None:
-            print(command.get_payload())
             self.client_socket.send(command.get_payload())

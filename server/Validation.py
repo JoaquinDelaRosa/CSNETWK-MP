@@ -11,3 +11,6 @@ def make_handle_not_found(sender_addr: tuple):
 
 def make_channel_not_found(sender_addr : tuple):
     return [Response("Error: Channel not found.", [sender_addr])]
+
+def make_failed_permissions(sender_addr: tuple):
+    return [Response("Error: You do not have permission to do this", [sender_addr])]

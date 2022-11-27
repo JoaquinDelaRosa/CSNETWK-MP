@@ -34,6 +34,10 @@ class InputHandler:
             return self.__parse_createc_command__(toks)
         if command == "/invitec":
             return self.__parse_invitec_command__(toks)
+        if command == "/acceptc":
+            return self.__parse_acceptc_command__(toks)
+        if command == "/declinec":
+            return self.__parse_declinec_command__(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -70,7 +74,7 @@ class InputHandler:
             | /channels                    | Display a list of all the   |
             |                              | channels in the server      |
             +------------------------------+-----------------------------+
-            | /cretaec <channel>           | Create a channel in the     |
+            | /createc <channel>           | Create a channel in the     |
             |                              | server if it doesn't exist. |
             |                              | You become the owner.       |
             +------------------------------+-----------------------------+
@@ -155,3 +159,20 @@ class InputHandler:
         handle = toks[2]
 
         return Invitec(channel, handle)
+
+    def __parse_acceptc_command__(self, toks: list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        channel = toks[1]
+
+        return Acceptc(channel)
+    
+    def __parse_declinec_command__(self, toks: list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        channel = toks[1]
+
+        return Declinec(channel)
+

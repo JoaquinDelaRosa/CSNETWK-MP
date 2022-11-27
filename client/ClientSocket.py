@@ -74,7 +74,6 @@ class ClientSocket:
             self.__update_to_disconnect_state__()
 
         except socket.timeout as err:
-            print(err)
             self.logger.log("Request Timed Out")
             return 
 

@@ -20,4 +20,28 @@ class ChannelModel:
         return user in self.admins or \
             user in self.members or \
             user in self.invitees or \
-            user.handle == self.owner
+            user == self.owner
+
+    def is_invited(self, user: ClientModel) -> bool:
+        return user in self.invitees
+    
+    def add_member(self, user: ClientModel) -> bool:
+        self.remove(user)
+        self.members.append(user)
+        
+    def remove(self, user : ClientModel) -> bool:
+        self.remove_from_invitees(user)
+        self.remove_from_members(user)
+        self.remove_from_admins(user)
+
+    def remove_from_invitees(self, user: ClientModel):
+        if user in self.invitees:
+            self.invitees.remove(user)
+
+    def remove_from_members(self, user: ClientModel):
+        if user in self.members:
+            self.members.remove(user)
+    
+    def remove_from_admins(self, user: ClientModel):
+        if user in self.admins:
+            self.admins.remove(user)
