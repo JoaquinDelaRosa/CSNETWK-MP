@@ -10,7 +10,7 @@ ast
 ```
 /createc <channel_name>              create a channel in the server. User becomes channel owner and admin.
 
-/invitec <handle>                    invite a user to the channel. Can only be done by channel admins.
+/invitec <channel_name> <handle>     invite a user to the channel. Can only be done by channel admins.
 /acceptc <channel_name>              accept an invitation to a channel. Can only be done if user is invited.
 /declinec <channel_name>             notifies all members of <channel_name> that user has declined their invitation. Can only be done if user is invited.
 
