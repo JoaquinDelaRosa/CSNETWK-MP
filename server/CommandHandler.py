@@ -1,22 +1,9 @@
 import ast
 
 from ServerState import *
+from Response import *
+from Validation import *
 
-class Response: 
-    def __init__(self, message : str, targets : list[tuple]):
-        self.message = message
-        self.targets =targets
-    
-    def __dict__(self) -> dict:
-        return {
-            'message' : self.message
-        }
-
-    def __bytes__(self):
-        return str(self.__dict__()).encode()
-    
-    def get_targets(self):
-        return self.targets
 
 class CommandHandler: 
     def __init__(self, server_state : ServerState):
@@ -58,8 +45,7 @@ class CommandHandler:
         return [Response("Connection closed. Thank you!", [sender_addr])]
 
     def __handle_register__(self, decoded : dict, sender_addr: tuple):
-        if not "handle" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'handle' as a keyword", [sender_addr])]
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
 
         handle = decoded["handle"]
         if self.server_state.try_register_handle(handle, sender_addr):
@@ -68,33 +54,28 @@ class CommandHandler:
         return [Response("Error: Registration failed. Handle or alias already exists.", [sender_addr])]
     
     def __handle_all__(self, decoded : dict, sender_addr: tuple) : 
-        if not "message" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'message' as a keyword", [sender_addr])]
+        if not "message" in decoded: make_bad_form_response("message", sender_addr)
         
-        handle = self.server_state.get_handle_of_addr(sender_addr)
+        sender_handle = self.server_state.get_handle_of_addr(sender_addr)
         message = decoded["message"]
         
-        if handle == None: 
-            return [Response("Error: Sender is not logged in", [sender_addr])]
+        if sender_handle == None: 
+            return make_unknown_sender(sender_addr)
 
-        return [Response(handle + ": " + message, [addr for addr in self.server_state.get_all_addr()])]
+        return [Response(sender_handle + ": " + message, [addr for addr in self.server_state.get_all_addr()])]
     
     def __handle_msg__(self, decoded : dict, sender_addr : tuple) :
-        if not "handle" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'handle' as a keyword", [sender_addr])]
-        if not "message" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'message' as a keyword", [sender_addr])]
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
+        if not "message" in decoded: make_bad_form_response("message", sender_addr)
         
         message = decoded["message"]
-        
         reciever_handle = decoded["handle"]
+
         sender_handle = self.server_state.get_handle_of_addr(sender_addr)
         receiver_addr = self.server_state.get_addr_of_handle(reciever_handle)
 
-        if sender_handle == None: 
-            return [Response("Error: Sender is not logged in", [sender_addr])]
-        if receiver_addr == None: 
-            return [Response("Error: Handle or alias not found.", [sender_addr])]
+        if sender_handle == None: return make_unknown_sender(sender_addr)
+        if receiver_addr == None: return make_handle_not_found(sender_addr)
         
         return [
             Response("[To " + reciever_handle + "]: " + message, [sender_addr]),
@@ -106,8 +87,7 @@ class CommandHandler:
         return [Response(message, [sender_addr])]
     
     def __handle_createc__(self, decoded: dict, sender_addr: tuple):
-        if not "channel" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'channel' as a keyword", [sender_addr])]
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
         
         channel : str = decoded["channel"]
         if self.server_state.try_create_channel(channel, sender_addr):
@@ -116,26 +96,21 @@ class CommandHandler:
         return [Response("Error: Channel creation failed.", [sender_addr])]
     
     def __handle_invitec__(self, decoded: dict, sender_addr: tuple):
-        if not "channel" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'channel' as a keyword", [sender_addr])]
-        if not "handle" in decoded:
-            return [Response("Error: Received object is in bad form. Expecting 'handle' as a keyword", [sender_addr])]
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
         
-        sender_handle = self.server_state.get_handle_of_addr(sender_addr)
-
-        if sender_handle == None: 
-            return [Response("Error: Sender is not logged in", [sender_addr])]
-
         channel = decoded["channel"]
         handle = decoded["handle"]
+
+        sender_handle = self.server_state.get_handle_of_addr(sender_addr)
         receiver_addr = self.server_state.get_addr_of_handle(handle)
         
-        if receiver_addr == None: 
-            return [Response("Error: Handle or alias not found.", [sender_addr])]
+        if sender_handle == None: return make_unknown_sender(sender_addr)
+        if receiver_addr == None: return make_handle_not_found(sender_addr)
 
         channel_model = self.server_state.channels[channel]
-        if channel_model == None:
-            return [Response("Error: Channel not found.", [sender_addr])]
+        if channel_model == None: return make_channel_not_found(sender_addr)
+        
         if channel_model.invite(self.server_state.clients[handle]):
             return [
                 Response("> " + channel + ": Invited " + handle, [sender_addr]),
