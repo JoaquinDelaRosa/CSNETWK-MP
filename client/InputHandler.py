@@ -32,6 +32,8 @@ class InputHandler:
             return self.__parse_channels_command__(toks)
         if command == "/createc":
             return self.__parse_createc_command__(toks)
+        if command == "/invitec":
+            return self.__parse_invitec_command__(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -65,8 +67,12 @@ class InputHandler:
             | /msg <handle> <message>      | Send direct message to a    |
             |                              | single handle               |
             +------------------------------+-----------------------------+
-            | /channels                    | Displa a list of all the    |
+            | /channels                    | Display a list of all the   |
             |                              | channels in the server      |
+            +------------------------------+-----------------------------+
+            | /cretaec <channel>           | Create a channel in the     |
+            |                              | server if it doesn't exist. |
+            |                              | You become the owner.       |
             +------------------------------+-----------------------------+
             | /?                           | Request command help        |
             +------------------------------+-----------------------------+
@@ -135,8 +141,17 @@ class InputHandler:
         if len(toks) != 2:
             return self.__handle_bad_syntax_error__()
         
-        channel_name = toks[1]
-        if len(channel_name) == 0:
+        channel = toks[1]
+        if len(channel) == 0:
             return self.__handle_bad_syntax_error__()
         
-        return CreateC(channel_name)
+        return Createc(channel)
+
+    def __parse_invitec_command__(self, toks: list):
+        if len(toks) != 3:
+            return self.__handle_bad_syntax_error__()
+        
+        channel = toks[1]
+        handle = toks[2]
+
+        return Invitec(channel, handle)

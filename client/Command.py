@@ -78,7 +78,7 @@ class Channels(Command):
             "command": "channels"
         }
 
-class CreateC(Command):
+class Createc(Command):
     def __init__(self, channel_name : str):
         self.channel_name = channel_name
         Command.__init__(self, "createc")
@@ -87,4 +87,17 @@ class CreateC(Command):
         return {
             "command": "createc",
             "channel": self.channel_name 
+        }
+
+class Invitec(Command):
+    def __init__(self, channel_name : str, handle : str):
+        self.channel_name = channel_name
+        self.handle = handle
+        Command.__init__(self, "invitec")
+
+    def get_payload(self):
+        return {
+            "command": "invitec",
+            "channel": self.channel_name,
+            "handle": self.handle
         }

@@ -17,7 +17,7 @@ class ServerState:
         if not self.is_recognized_handle(handle):
             return False 
 
-        if self.is_recognized_channel(handle):
+        if self.is_recognized_channel(channel):
             return False 
         
         self.channels[channel] = ChannelModel(handle, channel)
