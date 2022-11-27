@@ -43,7 +43,13 @@ class InputHandler:
         if command == "/promote":
             return self.__parse_promote_command__(toks)
         if command == "/demote":
-            return self.__parse_demote_command(toks)
+            return self.__parse_demote_command__(toks)
+        if command == "/leavec":
+            return self.__parse_leavec_command__(toks)
+        if command == "/kick":
+            return self.__parse_kick_command__(toks)
+        if command == "/deletec":
+            return self.__parse_deletec_command__(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -223,3 +229,62 @@ class InputHandler:
             return self.__handle_bad_syntax_error__()
 
         return Msgch(channel, message)
+
+    def __parse_promote_command__(self, toks :list):
+        if len(toks) != 3: 
+            return self.__handle_bad_syntax_error__()
+
+        channel = toks[1]
+        handle = toks[2]
+
+        if len(channel) == 0 or len(handle) == 0:
+            return self.__handle_bad_syntax_error__
+        
+        return Promote(channel, handle)
+    
+    def __parse_demote_command__(self, toks :list):
+        if len(toks) != 3: 
+            return self.__handle_bad_syntax_error__()
+
+        channel = toks[1]
+        handle = toks[2]
+
+        if len(channel) == 0 or len(handle) == 0:
+            return self.__handle_bad_syntax_error__()
+        
+        return Demote(channel, handle)
+
+    def __parse_leavec_command__(self, toks :list):
+        if len(toks) != 2: 
+            return self.__handle_bad_syntax_error__()
+
+        channel = toks[1]
+
+        if len(channel) == 0:
+            return self.__handle_bad_syntax_error__()
+        
+        return Leavec(channel)
+    
+    def __parse_kick_command__(self, toks :list):
+        if len(toks) != 3: 
+            return self.__handle_bad_syntax_error__()
+
+        channel = toks[1]
+        handle = toks[2]
+
+        if len(channel) == 0 or len(handle) == 0:
+            return self.__handle_bad_syntax_error__()
+        
+        return Kick(channel, handle)
+    
+    def __parse_deletec_command__(self, toks :list):
+        if len(toks) != 2: 
+            return self.__handle_bad_syntax_error__()
+
+        channel = toks[1]
+
+        if len(channel) == 0:
+            return self.__handle_bad_syntax_error__()
+        
+        return Deletec(channel) 
+    
