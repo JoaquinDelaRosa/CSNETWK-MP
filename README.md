@@ -5,7 +5,6 @@ Additional Features implemented:
 ## Requiered Libraries
 socket
 ast
-prettytables
 
 ## Channel feature
 ```
