@@ -31,7 +31,7 @@ class InputHandler:
         if command == "/channels":
             return self.__parse_channels_command__(toks)
         if command == "/createc":
-            return self.__parse_createc_command(toks)
+            return self.__parse_createc_command__(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -132,7 +132,7 @@ class InputHandler:
         return Channels()
     
     def __parse_createc_command__(self, toks: list):
-        if len(toks != 2):
+        if len(toks) != 2:
             return self.__handle_bad_syntax_error__()
         
         channel_name = toks[1]

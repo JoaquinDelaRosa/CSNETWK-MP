@@ -94,8 +94,8 @@ class CommandHandler:
         ]
     
     def __handle_channels__(self, decoded: dict, sender_addr: tuple):
-        message: str = self.server_state.construct_channels_list_message()
-        return [Response(message), [sender_addr]]
+        message: str = self.server_state.get_channels_list_message()
+        return [Response(message, [sender_addr])]
     
     def __handle_createc__(self, decoded: dict, sender_addr: tuple):
         if not "channel" in decoded:
@@ -105,6 +105,6 @@ class CommandHandler:
         if self.server_state.try_create_channel(channel, sender_addr):
             return [Response("Successfully created channel " + channel, [sender_addr])]
 
-        return [Response("Error: Channel creation failed. Channel already exists.", [sender_addr])]
+        return [Response("Error: Channel creation failed.", [sender_addr])]
         
         

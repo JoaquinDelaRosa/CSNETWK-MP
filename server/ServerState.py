@@ -24,6 +24,9 @@ class ServerState:
         return True
     
     def is_recognized_handle(self, handle: str) -> bool:
+        if handle is None:
+            return False 
+
         p_handle = handle.lower()
         if len(p_handle) == 0:
             return False 
@@ -31,6 +34,9 @@ class ServerState:
         return p_handle in [x.lower() for x in self.clients.keys()]
     
     def is_recognized_channel(self, channel: str) -> bool:
+        if channel is None:
+            return False
+
         p_channel = channel.lower()
         if len(p_channel) == 0:
             return False 
@@ -58,4 +64,4 @@ class ServerState:
         channels = [c.name for c in self.channels.values()]
         channels.sort()
 
-        return "Channels:\n" "\n".join(channels)
+        return "Channels:\n" + "\n".join(channels)
