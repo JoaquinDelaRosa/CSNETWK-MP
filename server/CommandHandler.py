@@ -39,6 +39,8 @@ class CommandHandler:
             return self.__handle_acceptc__(decoded, addr)
         elif command == "declinec":
             return self.__handle_declinec__(decoded, addr)
+        elif command == "msgch":
+            return self.__handle_msgch__(decoded, addr)
 
         return [Response("Unknown command recieved"), [addr]]
     
@@ -178,3 +180,21 @@ class CommandHandler:
             ]
 
         return [Response("Error: Acceptance failed.", [sender_addr])]
+    
+    def __handle_msgch__(self, decoded : dict, sender_addr : tuple) :
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        if not "message" in decoded: make_bad_form_response("message", sender_addr)
+        
+        channel = decoded["channel"]
+        message = decoded["message"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        reciever_channel = self.server_state.get_channel_by_name(channel)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        
+        return [
+            Response("[To <" + reciever_channel.name + ">]: " + message, [sender.addr]),
+            Response("[From " + sender.handle + "]: " + message, reciever_channel.get_all())
+        ]

@@ -22,6 +22,14 @@ class ChannelModel:
             user in self.invitees or \
             user == self.owner
 
+    def get_all(self) -> list[ClientModel]:
+        l =  [self.owner]
+        l.extend(self.admins)
+        l.extend(self.members)
+
+        return l
+        
+
     def is_invited(self, user: ClientModel) -> bool:
         return user in self.invitees
     
