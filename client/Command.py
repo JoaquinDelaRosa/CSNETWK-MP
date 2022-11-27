@@ -79,47 +79,114 @@ class Channels(Command):
         }
 
 class Createc(Command):
-    def __init__(self, channel_name : str):
-        self.channel_name = channel_name
+    def __init__(self, channel : str):
+        self.channel = channel
         Command.__init__(self, "createc")
 
     def get_payload(self):
         return {
             "command": "createc",
-            "channel": self.channel_name 
+            "channel": self.channel 
         }
 
 class Invitec(Command):
-    def __init__(self, channel_name : str, handle : str):
-        self.channel_name = channel_name
+    def __init__(self, channel : str, handle : str):
+        self.channel = channel
         self.handle = handle
         Command.__init__(self, "invitec")
 
     def get_payload(self):
         return {
             "command": "invitec",
-            "channel": self.channel_name,
+            "channel": self.channel,
             "handle": self.handle
         }
 
 class Acceptc(Command):
-    def __init__(self, channel_name : str):
-        self.channel_name = channel_name
+    def __init__(self, channel : str):
+        self.channel = channel
         Command.__init__(self, "acceptc")
 
     def get_payload(self):
         return {
             "command": "acceptc",
-            "channel": self.channel_name,
+            "channel": self.channel,
         }
 
 class Declinec(Command):
-    def __init__(self, channel_name : str):
-        self.channel_name = channel_name
+    def __init__(self, channel : str):
+        self.channel = channel
         Command.__init__(self, "declinec")
 
     def get_payload(self):
         return {
             "command": "declinec",
-            "channel": self.channel_name,
+            "channel": self.channel,
+        }
+
+class Msgch(Command):
+    def __init__(self, channel: str):
+        self.channel = channel 
+
+    def get_payload(self):
+        return {
+            "command": "msgch",
+            "channel": self.channel
+        }
+
+class Promote(Command):
+    def __init__(self, channel: str, handle:str):
+        self.channel = channel 
+        self.handle = handle 
+    
+    def get_payload(self):
+        return {
+            "command": "promote",
+            "channel": self.channel,
+            "handle": self.handle
+        }
+
+class Demote(Command):
+    def __init__(self, channel: str, handle:str):
+        self.channel = channel 
+        self.handle = handle 
+    
+    def get_payload(self):
+        return {
+            "command": "demote",
+            "channel": self.channel,
+            "handle": self.handle
+        }
+
+class Kick(Command):
+    def __init__(self, channel: str, handle:str):
+        self.channel = channel 
+        self.handle = handle 
+    
+    def get_payload(self):
+        return {
+            "command": "kick",
+            "channel": self.channel,
+            "handle": self.handle
+        }
+
+
+class Leavec(Command):
+    def __init__(self, channel: str):
+        self.channel = channel 
+    
+    def get_payload(self):
+        return {
+            "command": "leavec",
+            "channel": self.channel,
+        }
+
+class Deletec(Command):
+    def __init__(self, channel: str, handle:str):
+        self.channel = channel 
+    
+    def get_payload(self):
+        return {
+            "command": "deletec",
+            "channel": self.channel,
         }
