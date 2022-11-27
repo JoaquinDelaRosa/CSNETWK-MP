@@ -2,6 +2,11 @@
 
 Additional Features implemented:
 
+## Requiered Libraries
+socket
+ast
+prettytables
+
 ## Channel feature
 ```
 /createc <channel_name>              create a channel in the server. User becomes channel owner and admin.
