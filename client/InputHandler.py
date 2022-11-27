@@ -38,6 +38,12 @@ class InputHandler:
             return self.__parse_acceptc_command__(toks)
         if command == "/declinec":
             return self.__parse_declinec_command__(toks)
+        if command == "/msgch":
+            return self.__parse_msgch_command__(toks)
+        if command == "/promote":
+            return self.__parse_promote_command__(toks)
+        if command == "/demote":
+            return self.__parse_demote_command(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -77,6 +83,36 @@ class InputHandler:
             | /createc <channel>           | Create a channel in the     |
             |                              | server if it doesn't exist. |
             |                              | You become the owner.       |
+            +------------------------------+-----------------------------+
+            | /invitec <channel> <handle>  | Invite a user to the        |
+            |                              | channel if they are not     |
+            |                              | yet a member                |
+            +------------------------------+-----------------------------+
+            | /acceptc <channel>           | Acceot an invitation        |
+            |                              | to a channel                |
+            +------------------------------+-----------------------------+
+            | /declinec <channel>          | Decline an invitation       |
+            |                              | to a channel                |
+            +------------------------------+-----------------------------+
+            | /msgch <channel>             | Send a message to all       |
+            |                              | members in a channel        |
+            +------------------------------+-----------------------------+
+            | /promote <channel> <handle>  | Requires admin perms:       |
+            |                              | promote channel member to   |
+            |                              | admin                       |
+            +------------------------------+-----------------------------+
+            | /demote <channel> <handle>   | Requires admin perms:       |
+            |                              | demote channel admin   to   |
+            |                              | member                      |
+            +------------------------------+-----------------------------+
+            | /leavec <channel>            | If you are not the owner    |
+            |                              | leave the channel           |
+            +------------------------------+-----------------------------+
+            | /kick <channel> <handle>     | Requires admin perms:       |
+            |                              | kick a channel member       |
+            +------------------------------+-----------------------------+
+            | /deletec <channel>           | Requires owner perms:       |
+            |                              | delete a channel            |
             +------------------------------+-----------------------------+
             | /?                           | Request command help        |
             +------------------------------+-----------------------------+
@@ -176,3 +212,14 @@ class InputHandler:
 
         return Declinec(channel)
 
+    def __parse_msgch_command__(self, toks : list):
+        if len(toks) < 3:
+            return self.__handle_bad_syntax_error__() 
+
+        channel = toks[1]
+        message = ' '.join(toks[2:])
+
+        if len(channel) == 0 or len(message) == 0:
+            return self.__handle_bad_syntax_error__()
+
+        return Msgch(channel, message)
