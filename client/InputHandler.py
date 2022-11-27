@@ -27,6 +27,12 @@ class InputHandler:
         if command == "/?":
             return self.__parse_help_command__(toks)
 
+        # Additional commands
+        if command == "/channels":
+            return self.__parse_channels_command__(toks)
+        if command == "/createc":
+            return self.__parse_createc_command(toks)
+
         return self.__handle_command_not_found_error__()
     
     def __handle_command_not_found_error__(self):
@@ -37,6 +43,37 @@ class InputHandler:
         self.logger.log("Command parameters do not match or is not allowed.")
         return None
 
+    def __parse_help_command__(self, toks: list):
+        if len(toks) != 1:
+            return self.__handle_bad_syntax_error__()
+
+        self.logger.log("""
+            +------------------------------+-----------------------------+
+            | Input Syntax                 | Description                 |
+            +------------------------------+-----------------------------+
+            | /join <server_ip_add> <port> | Connect to the server       |
+            |                              | application                 |
+            +------------------------------+-----------------------------+
+            | /leave                       | Disconnect from the server  |
+            |                              | application                 |
+            +------------------------------+-----------------------------+
+            | /register <handle>           | Register a unique handle    |
+            |                              | or alias                    |
+            +------------------------------+-----------------------------+
+            | /all <message>               | Send message to all         |
+            +------------------------------+-----------------------------+
+            | /msg <handle> <message>      | Send direct message to a    |
+            |                              | single handle               |
+            +------------------------------+-----------------------------+
+            | /channels                    | Displa a list of all the    |
+            |                              | channels in the server      |
+            +------------------------------+-----------------------------+
+            | /?                           | Request command help        |
+            +------------------------------+-----------------------------+
+            
+        """)
+        return None
+    
     def __parse_join_command__(self, toks : list):
         if len(toks) != 3:
             return self.__handle_bad_syntax_error__()
@@ -88,29 +125,18 @@ class InputHandler:
 
         return Msg(handle, message)
 
-    def __parse_help_command__(self, toks: list):
+    def __parse_channels_command__(self, toks: list):
         if len(toks) != 1:
             return self.__handle_bad_syntax_error__()
-
-        self.logger.log("""
-            +------------------------------+-----------------------------+
-            | Input Syntax                 | Description                 |
-            +------------------------------+-----------------------------+
-            | /join <server_ip_add> <port> | Connect to the server       |
-            |                              | application                 |
-            +------------------------------+-----------------------------+
-            | /leave                       | Disconnect from the server  |
-            |                              | application                 |
-            +------------------------------+-----------------------------+
-            | /register <handle>           | Register a unique handle    |
-            |                              | or alias                    |
-            +------------------------------+-----------------------------+
-            | /all <message>               | Send message to all         |
-            +------------------------------+-----------------------------+
-            | /msg <handle> <message>      | Send direct message to a    |
-            |                              | single handle               |
-            +------------------------------+-----------------------------+
-            | /?                           | Request command help        |
-            +------------------------------+-----------------------------+
-        """)
-        return None
+        
+        return Channels()
+    
+    def __parse_createc_command__(self, toks: list):
+        if len(toks != 2):
+            return self.__handle_bad_syntax_error__()
+        
+        channel_name = toks[1]
+        if len(channel_name) == 0:
+            return self.__handle_bad_syntax_error__()
+        
+        return CreateC(channel_name)

@@ -22,15 +22,5 @@ class CommandHandler:
         elif isinstance(command, Leave):
             self.client_socket.leave()
 
-        elif isinstance(command, Register):
-            register : Register = command
-            self.client_socket.send(register.get_payload())
-        
-        elif isinstance(command, All):
-            all: All = command
-            self.client_socket.send(all.get_payload())
-        
-        elif isinstance(command, Msg):
-            msg : Msg = command 
-            self.client_socket.send(msg.get_payload())
-    
+        elif not command is None:
+            self.client_socket.send(command.get_payload())

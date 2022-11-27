@@ -41,6 +41,12 @@ class CommandHandler:
         elif command == "msg":
             return self.__handle_msg__(decoded, addr)
 
+        # Additional commands
+        elif command == "channels":
+            return self.__handle_channels__(decoded, addr)
+        elif command == "createc":
+            return self.__handle_createc__(decoded, addr)
+
         return Response("Unknown command recieved")
     
     def __handle_join__(self, decoded : dict, addr : tuple):
@@ -86,6 +92,19 @@ class CommandHandler:
             Response("[To " + reciever_handle + "]: " + message, [sender_addr]),
             Response("[From " + sender_handle + "]: " + message, [receiver_addr])
         ]
+    
+    def __handle_channels__(self, decoded: dict, sender_addr: tuple):
+        message: str = self.server_state.construct_channels_list_message()
+        return [Response(message), [sender_addr]]
+    
+    def __handle_createc__(self, decoded: dict, sender_addr: tuple):
+        if not "channel" in decoded:
+            return [Response("Error: Received object is in bad form. Expecting 'channel' as a keyword", [sender_addr])]
         
+        channel : str = decoded["channel"]
+        if self.server_state.try_create_channel(channel, sender_addr):
+            return [Response("Successfully created channel " + channel, [sender_addr])]
+
+        return [Response("Error: Channel creation failed. Channel already exists.", [sender_addr])]
         
         

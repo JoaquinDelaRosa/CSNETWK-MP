@@ -3,6 +3,11 @@ class Command:
 
     def __init__(self, command: str):
         self.command = command
+    
+    def get_payload(self):
+        return {
+            "command": self.command
+        }
 
 class Join(Command):
 
@@ -10,11 +15,21 @@ class Join(Command):
         self.server_ip_address = server_ip_address
         self.port =port
         Command.__init__(self, "join")
+    
+    def get_payload(self):
+        return {
+            "command": "join"
+        }
 
 class Leave(Command):
 
     def __init__(self):
         Command.__init__(self, "leave")
+    
+    def get_payload(self):
+        return {
+            "command": "leave"
+        }
 
 class Register(Command):
 
@@ -52,4 +67,24 @@ class Msg(Command):
             "command": "msg",
             "handle": self.handle,
             "message": self.message
+        }
+
+class Channels(Command):
+    def __init__(self):
+        Command.__init__(self, "channels")
+
+    def get_payload(self):
+        return {
+            "command": "channels"
+        }
+
+class CreateC(Command):
+    def __init__(self, channel_name : str):
+        self.channel_name = channel_name
+        Command.__init__(self, "createc")
+
+    def get_payload(self):
+        return {
+            "command": "createc",
+            "channel": self.channel_name 
         }
