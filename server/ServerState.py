@@ -2,6 +2,8 @@ from ChannelModel import *
 from ClientModel import * 
 
 class ServerState:
+
+    current_client_id_ = 0
     clients: dict[str, ClientModel] = {}
     channels: dict[str, ChannelModel] = {}
 
@@ -9,7 +11,8 @@ class ServerState:
         if self.is_recognized_handle(handle):
             return False 
 
-        self.clients[handle] = ClientModel(addr, handle)
+        self.clients[handle] = ClientModel(addr, handle, self.current_client_id_)
+        self.current_client_id_ += 1
         return True
     
     def try_create_channel(self, channel: str, addr: tuple) -> bool:
