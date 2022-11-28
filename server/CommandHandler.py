@@ -154,7 +154,7 @@ class CommandHandler:
             return [Response("You are already a member"), [sender.addr]]
 
         if not channel_model.is_invited(sender):
-            return [Response("You are not invited to this channel"),[sender.addr]]
+            return [Response("You are not invited to this channel",[sender.addr])]
             
         channel_model.add_member(sender)
         return [
@@ -222,7 +222,7 @@ class CommandHandler:
 
         if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
         if not receiver_channel.is_member_strict(sender):
-            return [Response("Promotion redundant. No need to promote"), [sender_addr]]
+            return [Response("Promotion redundant. No need to promote", [sender_addr])]
         
         receiver_channel.add_admin(receiver)
 
@@ -248,7 +248,7 @@ class CommandHandler:
 
         if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
         if not receiver_channel.is_admin_strict(receiver):
-            return [Response("Demotion redundant. No need to demote"), [sender_addr]]
+            return [Response("Demotion redundant. No need to demote", [sender_addr])]
         
         receiver_channel.add_member(receiver)
 
@@ -269,9 +269,9 @@ class CommandHandler:
         if receiver_channel == None: return make_channel_not_found(sender_addr)
 
         if not receiver_channel.is_member(sender):  
-            return [Response("You are not a member of this channel."), [sender_addr]]
+            return [Response("You are not a member of this channel.", [sender_addr])]
         if receiver_channel.is_owner(sender):
-            return [Response("You cannot leave the channel. You are the owner."), [sender_addr]]
+            return [Response("You cannot leave the channel. You are the owner.", [sender_addr])]
 
         receiver_channel.remove(sender)
         return [
@@ -296,9 +296,9 @@ class CommandHandler:
 
         if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
         if not receiver_channel.is_member(receiver):
-            return [Response("User is not a member of the channel"), [sender_addr]]
+            return [Response("User is not a member of the channel" ,[sender_addr])]
         if receiver_channel.is_owner(receiver):
-            return [Response("Cannot kick the channel owner"), [sender_addr]]
+            return [Response("Cannot kick the channel owner", [sender_addr])]
         
         receiver_channel.remove(sender)
         return [
