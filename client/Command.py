@@ -125,13 +125,15 @@ class Declinec(Command):
         }
 
 class Msgch(Command):
-    def __init__(self, channel: str):
+    def __init__(self, channel: str, message: str):
         self.channel = channel 
+        self.message = message
 
     def get_payload(self):
         return {
             "command": "msgch",
-            "channel": self.channel
+            "channel": self.channel,
+            "message": self.message
         }
 
 class Promote(Command):

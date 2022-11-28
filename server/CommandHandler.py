@@ -132,8 +132,8 @@ class CommandHandler:
 
         if channel_model.invite(self.server_state.clients[receiver_handle]):
             return [
-                Response("> " + channel + ": Invited " + reciever.handle, [sender.addr]),
-                Response(sender.handle + " is inviting you to " + channel, [reciever.addr])
+                Response(str(channel) + ": Invited " + reciever.handle, [sender.addr]),
+                Response(sender.handle + " is inviting you to " + str(channel), [reciever.addr])
             ]
 
         return [Response("Error: Invitation failed.", [sender_addr])]
@@ -225,6 +225,7 @@ class CommandHandler:
             return [Response("Promotion redundant. No need to promote", [sender_addr])]
         
         receiver_channel.add_admin(receiver)
+        self.server_state.mutate_channel(receiver_channel)
 
         return [
             Response(str(receiver_channel) + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
@@ -251,6 +252,7 @@ class CommandHandler:
             return [Response("Demotion redundant. No need to demote", [sender_addr])]
         
         receiver_channel.add_member(receiver)
+        self.server_state.mutate_channel(receiver_channel)
 
         return [
             Response(str(receiver_channel) + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
@@ -274,9 +276,11 @@ class CommandHandler:
             return [Response("You cannot leave the channel. You are the owner.", [sender_addr])]
 
         receiver_channel.remove(sender)
+        self.server_state.mutate_channel(receiver_channel)
+
         return [
             Response(str(receiver_channel) + sender.handle + " has left the channel." , [x.addr for x in receiver_channel.get_all() if x!=sender]),
-            Response("Successfully has promoted you to the role of admin.", [sender.addr])
+            Response(str(receiver_channel) + ": You have left the channel", [sender.addr])
         ]
 
     def __handle_kick__(self, decoded: dict, sender_addr: tuple):
@@ -301,6 +305,8 @@ class CommandHandler:
             return [Response("Cannot kick the channel owner", [sender_addr])]
         
         receiver_channel.remove(sender)
+        self.server_state.mutate_channel(receiver_channel)
+
         return [
             Response(str(receiver_channel) + sender.handle + " has kicked " + receiver.handle + " from the rol of the server." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
             Response(str(receiver_channel) + sender.handle + " has kicked you from the channel.", [receiver.addr])

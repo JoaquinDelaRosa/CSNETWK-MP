@@ -46,6 +46,11 @@ class ServerState:
         
         return p_channel in [c.name.lower() for c in self.channels.values()]
     
+    def mutate_channel(self, channel: ChannelModel) -> bool:
+        if channel is None:
+            return False 
+        self.channels[channel.name] = channel
+
     def get_clients(self) -> dict:
         return self.clients
 
