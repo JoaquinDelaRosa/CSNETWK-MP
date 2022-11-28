@@ -304,12 +304,12 @@ class CommandHandler:
         if receiver_channel.is_owner(receiver):
             return [Response("Cannot kick the channel owner", [sender_addr])]
         
-        receiver_channel.remove(sender)
+        receiver_channel.remove(receiver)
         self.server_state.mutate_channel(receiver_channel)
 
         return [
-            Response(str(receiver_channel) + sender.handle + " has kicked " + receiver.handle + " from the rol of the server." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
-            Response(str(receiver_channel) + sender.handle + " has kicked you from the channel.", [receiver.addr])
+            Response(str(receiver_channel) +": " + sender.handle + " has kicked " + receiver.handle + " from the channel." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) +": " + sender.handle + " has kicked you from the channel.", [receiver.addr])
         ]
 
     def __handle_deletec__(self, decoded: dict, sender_addr: tuple):
@@ -323,10 +323,10 @@ class CommandHandler:
         if sender == None: return make_unknown_sender(sender_addr)
         if receiver_channel == None: return make_channel_not_found(sender_addr)
 
-        if not receiver_channel.is_owner(sender_addr): return make_failed_permissions(sender_addr)
+        if not receiver_channel.is_owner(sender): return make_failed_permissions(sender_addr)
         
         members = receiver_channel.get_all()
-        self.server_state.channels.pop(receiver_channel)
+        self.server_state.channels.pop(receiver_channel.name)
 
         return [
             Response(str(receiver_channel) + "Channel has been deleted" , [x.addr for x in members]),

@@ -184,7 +184,7 @@ class Leavec(Command):
         }
 
 class Deletec(Command):
-    def __init__(self, channel: str, handle:str):
+    def __init__(self, channel: str):
         self.channel = channel 
     
     def get_payload(self):
