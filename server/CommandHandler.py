@@ -159,7 +159,7 @@ class CommandHandler:
         channel_model.add_member(sender)
         return [
             Response(str(channel_model) + ": Invite to " + channel + " acknowledged. Welcome! ", [sender.addr]),
-            Response(str(channel_model) + ": " + sender.handle + "has joined the channel.", [x.addr for x in channel_model.get_all() if x != sender])
+            Response(str(channel_model) + ": " + sender.handle + " has joined the channel.", [x.addr for x in channel_model.get_all() if x != sender])
         ]
 
     def __handle_declinec__(self, decoded: dict, sender_addr: tuple):
@@ -175,10 +175,10 @@ class CommandHandler:
         if sender == None: return make_unknown_sender(sender_addr)
         
         if channel_model.is_member(sender):
-            return [Response("You are already a member"), [sender.addr]]
+            return [Response("You are already a member", [sender.addr])]
 
         if not channel_model.is_invited(sender):
-            return [Response("You are not invited to this channel"),[sender.addr]]
+            return [Response("You are not invited to this channel",[sender.addr])]
 
         channel_model.remove_from_invitees(sender)
         return [
