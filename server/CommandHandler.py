@@ -194,67 +194,67 @@ class CommandHandler:
         message = decoded["message"]
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        reciever_channel = self.server_state.get_channel_by_name(channel)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if reciever_channel == None: return make_channel_not_found(sender_addr)
-        if not reciever_channel.is_member(sender): return make_failed_permissions(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
+        if not receiver_channel.is_member(sender): return make_failed_permissions(sender_addr)
         
         return [
-            Response(str(reciever_channel) + ": " + message, [sender.addr]),
-            Response(str(reciever_channel) + "[From " + sender.handle + "]: " + message, [x.addr for x in reciever_channel.get_all() if x != sender])
+            Response(str(receiver_channel) + ": " + message, [sender.addr]),
+            Response(str(receiver_channel) + "[From " + sender.handle + "]: " + message, [x.addr for x in receiver_channel.get_all() if x != sender])
         ]
     
     def __handle_promote__(self, decoded: dict, sender_addr: tuple):
         if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
-        if not "handle" in decoded: make_bad_form_response("hanlde", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
         
         channel = decoded["channel"]
         receiver_handle = decoded["handle"]
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        reciever_channel = self.server_state.get_channel_by_name(channel)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
         receiver = self.server_state.get_client_by_handle(receiver_handle)
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
         if receiver == None: return make_handle_not_found(sender_addr)
 
-        if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
-        if not reciever_channel.is_member_strict(sender):
+        if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
+        if not receiver_channel.is_member_strict(sender):
             return [Response("Promotion redundant. No need to promote"), [sender_addr]]
         
-        reciever_channel.add_admin(receiver)
+        receiver_channel.add_admin(receiver)
 
         return [
-            Response(str(reciever_channel) + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in reciever_channel.get_all() if x!=receiver]),
-            Response(str(reciever_channel) + sender.handle + " has promoted you to the role of admin.", [receiver.addr])
+            Response(str(receiver_channel) + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) + sender.handle + " has promoted you to the role of admin.", [receiver.addr])
         ]
 
     def __handle_demote__(self, decoded: dict, sender_addr: tuple):
         if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
-        if not "handle" in decoded: make_bad_form_response("hanlde", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
         
         channel = decoded["channel"]
         receiver_handle = decoded["handle"]
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        reciever_channel = self.server_state.get_channel_by_name(channel)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
         receiver = self.server_state.get_client_by_handle(receiver_handle)
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
         if receiver == None: return make_handle_not_found(sender_addr)
 
-        if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
-        if not reciever_channel.is_admin_strict(receiver):
+        if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
+        if not receiver_channel.is_admin_strict(receiver):
             return [Response("Demotion redundant. No need to demote"), [sender_addr]]
         
-        reciever_channel.add_member(receiver)
+        receiver_channel.add_member(receiver)
 
         return [
-            Response(str(reciever_channel) + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in reciever_channel.get_all() if x!=receiver]),
-            Response(str(reciever_channel) + sender.handle + " has promoted you to the role of member.", [receiver.addr])
+            Response(str(receiver_channel) + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) + sender.handle + " has promoted you to the role of member.", [receiver.addr])
         ]
 
     def __handle_leavec__(self, decoded: dict, sender_addr: tuple):
@@ -262,13 +262,66 @@ class CommandHandler:
         
         channel = decoded["channel"]
 
-        reciever_channel = self.server_state.get_channel_by_name(channel)
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
 
-        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if sender == None: return make_unknown_sender(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
 
+        if not receiver_channel.is_member(sender):  
+            return [Response("You are not a member of this channel."), [sender_addr]]
+        if receiver_channel.is_owner(sender):
+            return [Response("You cannot leave the channel. You are the owner."), [sender_addr]]
+
+        receiver_channel.remove(sender)
+        return [
+            Response(str(receiver_channel) + sender.handle + " has left the channel." , [x.addr for x in receiver_channel.get_all() if x!=sender]),
+            Response("Successfully has promoted you to the role of admin.", [sender.addr])
+        ]
 
     def __handle_kick__(self, decoded: dict, sender_addr: tuple):
-        pass
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
+        
+        channel = decoded["channel"]
+        receiver_handle = decoded["handle"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
+
+        if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
+        if not receiver_channel.is_member(receiver):
+            return [Response("User is not a member of the channel"), [sender_addr]]
+        if receiver_channel.is_owner(receiver):
+            return [Response("Cannot kick the channel owner"), [sender_addr]]
+        
+        receiver_channel.remove(sender)
+        return [
+            Response(str(receiver_channel) + sender.handle + " has kicked " + receiver.handle + " from the rol of the server." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) + sender.handle + " has kicked you from the channel.", [receiver.addr])
+        ]
 
     def __handle_deletec__(self, decoded: dict, sender_addr: tuple):
-        pass
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        
+        channel = decoded["channel"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        receiver_channel = self.server_state.get_channel_by_name(channel)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if receiver_channel == None: return make_channel_not_found(sender_addr)
+
+        if not receiver_channel.is_owner(sender_addr): return make_failed_permissions(sender_addr)
+        
+        members = receiver_channel.get_all()
+        self.server_state.channels.pop(receiver_channel)
+
+        return [
+            Response(str(receiver_channel) + "Channel has been deleted" , [x.addr for x in members]),
+        ]

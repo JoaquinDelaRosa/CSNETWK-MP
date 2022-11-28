@@ -38,6 +38,9 @@ class ChannelModel:
 
     def is_admin(self, user: ClientModel) -> bool:
         return user in self.admins or user == self.owner
+    
+    def is_owner(self, user: ClientModel) -> bool:
+        return user == self.owner
 
     def is_member_strict(self, user: ClientModel) -> bool:
         return user in self.members
