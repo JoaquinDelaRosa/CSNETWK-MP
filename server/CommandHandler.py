@@ -203,7 +203,7 @@ class CommandHandler:
         
         return [
             Response(str(receiver_channel) + ": " + message, [sender.addr]),
-            Response(str(receiver_channel) + "[From " + sender.handle + "]: " + message, [x.addr for x in receiver_channel.get_all() if x != sender])
+            Response(str(receiver_channel) + " [From " + sender.handle + "]: " + message, [x.addr for x in receiver_channel.get_all() if x != sender])
         ]
     
     def __handle_promote__(self, decoded: dict, sender_addr: tuple):
@@ -230,8 +230,8 @@ class CommandHandler:
         self.server_state.mutate_channel(receiver_channel)
 
         return [
-            Response(str(receiver_channel) + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
-            Response(str(receiver_channel) + sender.handle + " has promoted you to the role of admin.", [receiver.addr])
+            Response(str(receiver_channel) + " " + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) + " " + sender.handle + " has promoted you to the role of admin.", [receiver.addr])
         ]
 
     def __handle_demote__(self, decoded: dict, sender_addr: tuple):
@@ -257,8 +257,8 @@ class CommandHandler:
         self.server_state.mutate_channel(receiver_channel)
 
         return [
-            Response(str(receiver_channel) + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
-            Response(str(receiver_channel) + sender.handle + " has promoted you to the role of member.", [receiver.addr])
+            Response(str(receiver_channel) + " " + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in receiver_channel.get_all() if x!=receiver]),
+            Response(str(receiver_channel) + " " + sender.handle + " has demoted you to the role of member.", [receiver.addr])
         ]
 
     def __handle_leavec__(self, decoded: dict, sender_addr: tuple):
