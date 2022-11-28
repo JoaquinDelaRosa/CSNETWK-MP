@@ -203,6 +203,7 @@ class CommandHandler:
 
         if sender == None: return make_unknown_sender(sender_addr)
         if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if not reciever_channel.is_member_strict(sender): return make_failed_permissions(sender_addr)
         
         return [
             Response(str(reciever_channel) + ": " + message, [sender.addr]),
