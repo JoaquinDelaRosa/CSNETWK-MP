@@ -221,7 +221,7 @@ class CommandHandler:
         if receiver == None: return make_handle_not_found(sender_addr)
 
         if not receiver_channel.is_admin(sender): return make_failed_permissions(sender_addr)
-        if not receiver_channel.is_member_strict(sender):
+        if not receiver_channel.is_member_strict(receiver):
             return [Response("Promotion redundant. No need to promote", [sender_addr])]
         
         receiver_channel.add_admin(receiver)
