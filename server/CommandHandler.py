@@ -147,23 +147,20 @@ class CommandHandler:
         if channel_model == None: return make_channel_not_found(sender_addr)
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        receiver = self.server_state.channels[channel].owner
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if receiver == None: return make_handle_not_found(sender_addr)
         
-        print(receiver)
-        if sender == receiver: 
-            return [Response("Error: Server owner cannot accept or reject because they are always in the channel"), [sender.addr]]
+        if channel_model.is_member(sender):
+            return [Response("You are already a member"), [sender.addr]]
 
-        if channel_model.is_invited(sender):
-            channel_model.add_member(sender)
-            return [
-                Response("> Invite to " + channel + " acknowledged. Welcome! ", [sender.addr]),
-                Response("> "+ sender.handle + "accepted your invite.", [receiver.addr])
-            ]
-
-        return [Response("Error: Acceptance failed.", [sender_addr])]
+        if not channel_model.is_invited(sender):
+            return [Response("You are not invited to this channel"),[sender.addr]]
+            
+        channel_model.add_member(sender)
+        return [
+            Response(str(channel_model) + ": Invite to " + channel + " acknowledged. Welcome! ", [sender.addr]),
+            Response(str(channel_model) + ": " + sender.handle + "has joined the channel.", [x.addr for x in channel_model.get_all() if x != sender])
+        ]
 
     def __handle_declinec__(self, decoded: dict, sender_addr: tuple):
         if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
@@ -174,22 +171,20 @@ class CommandHandler:
         if channel_model == None: return make_channel_not_found(sender_addr)
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        receiver = self.server_state.channels[channel].owner
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if receiver == None: return make_handle_not_found(sender_addr)
         
-        if sender == receiver: 
-            return [Response("Error: Server owner cannot accept or reject because they are always in a channel"), [sender.addr]]
+        if channel_model.is_member(sender):
+            return [Response("You are already a member"), [sender.addr]]
 
-        if channel_model.is_invited(sender):
-            channel_model.remove_from_invitees(sender)
-            return [
-                Response("> Invite to " + channel + " declined.", [sender_addr]),
-                Response("> "+ sender.handle + "declined your invite.", [receiver.addr])
-            ]
+        if not channel_model.is_invited(sender):
+            return [Response("You are not invited to this channel"),[sender.addr]]
 
-        return [Response("Error: Acceptance failed.", [sender_addr])]
+        channel_model.remove_from_invitees(sender)
+        return [
+            Response("Invite to " + channel + " declined.", [sender_addr])
+        ]
+
     
     def __handle_msgch__(self, decoded : dict, sender_addr : tuple) :
         if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
@@ -203,7 +198,7 @@ class CommandHandler:
 
         if sender == None: return make_unknown_sender(sender_addr)
         if reciever_channel == None: return make_channel_not_found(sender_addr)
-        if not reciever_channel.is_member_strict(sender): return make_failed_permissions(sender_addr)
+        if not reciever_channel.is_member(sender): return make_failed_permissions(sender_addr)
         
         return [
             Response(str(reciever_channel) + ": " + message, [sender.addr]),
@@ -223,11 +218,11 @@ class CommandHandler:
 
         if sender == None: return make_unknown_sender(sender_addr)
         if reciever_channel == None: return make_channel_not_found(sender_addr)
-        if receiver_handle == None: return make_handle_not_found(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
 
         if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
         if not reciever_channel.is_member_strict(sender):
-            return [Response("User already has admin permissions. No need to promote"), [sender_addr]]
+            return [Response("Promotion redundant. No need to promote"), [sender_addr]]
         
         reciever_channel.add_admin(receiver)
 
@@ -249,11 +244,11 @@ class CommandHandler:
 
         if sender == None: return make_unknown_sender(sender_addr)
         if reciever_channel == None: return make_channel_not_found(sender_addr)
-        if receiver_handle == None: return make_handle_not_found(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
 
         if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
-        if not reciever_channel.is_admin_strict(sender):
-            return [Response("User already has member permissions. No need to demote"), [sender_addr]]
+        if not reciever_channel.is_admin_strict(receiver):
+            return [Response("Demotion redundant. No need to demote"), [sender_addr]]
         
         reciever_channel.add_member(receiver)
 
@@ -263,7 +258,14 @@ class CommandHandler:
         ]
 
     def __handle_leavec__(self, decoded: dict, sender_addr: tuple):
-        pass
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        
+        channel = decoded["channel"]
+
+        reciever_channel = self.server_state.get_channel_by_name(channel)
+
+        if reciever_channel == None: return make_channel_not_found(sender_addr)
+
 
     def __handle_kick__(self, decoded: dict, sender_addr: tuple):
         pass
