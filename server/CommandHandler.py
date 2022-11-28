@@ -41,6 +41,16 @@ class CommandHandler:
             return self.__handle_declinec__(decoded, addr)
         elif command == "msgch":
             return self.__handle_msgch__(decoded, addr)
+        elif command == "promote":
+            return self.__handle_promote__(decoded, addr)
+        elif command == "demote":
+            return self.__handle_demote__(decoded, addr)
+        elif command == "leavec":
+            return self.__handle_leavec__(decoded, addr)
+        elif command == "kick":
+            return self.__handle_kick__(decoded, addr)
+        elif command == "deletec":
+            return self.__handle_deletec__(decoded, addr)
 
         return [Response("Unknown command recieved"), [addr]]
     
@@ -117,7 +127,7 @@ class CommandHandler:
         channel_model = self.server_state.get_channel_by_name(channel)
         if channel_model == None: return make_channel_not_found(sender_addr)
 
-        if not channel_model.has_pseudo(sender):
+        if not channel_model.is_recognized(sender):
             return make_failed_permissions(sender_addr)
 
         if channel_model.invite(self.server_state.clients[receiver_handle]):
@@ -195,6 +205,67 @@ class CommandHandler:
         if reciever_channel == None: return make_channel_not_found(sender_addr)
         
         return [
-            Response("[To <" + reciever_channel.name + ">]: " + message, [sender.addr]),
-            Response("[From " + sender.handle + "]: " + message, reciever_channel.get_all())
+            Response(str(reciever_channel) + ": " + message, [sender.addr]),
+            Response(str(reciever_channel) + "[From " + sender.handle + "]: " + message, [x.addr for x in reciever_channel.get_all() if x != sender])
         ]
+    
+    def __handle_promote__(self, decoded: dict, sender_addr: tuple):
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("hanlde", sender_addr)
+        
+        channel = decoded["channel"]
+        receiver_handle = decoded["handle"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        reciever_channel = self.server_state.get_channel_by_name(channel)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if receiver_handle == None: return make_handle_not_found(sender_addr)
+
+        if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
+        if not reciever_channel.is_member_strict(sender):
+            return [Response("User already has admin permissions. No need to promote"), [sender_addr]]
+        
+        reciever_channel.add_admin(receiver)
+
+        return [
+            Response(str(reciever_channel) + sender.handle + " has promoted " + receiver.handle + " to the role of admin." , [x.addr for x in reciever_channel.get_all() if x!=receiver]),
+            Response(str(reciever_channel) + sender.handle + " has promoted you to the role of admin.", [receiver.addr])
+        ]
+
+    def __handle_demote__(self, decoded: dict, sender_addr: tuple):
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        if not "handle" in decoded: make_bad_form_response("hanlde", sender_addr)
+        
+        channel = decoded["channel"]
+        receiver_handle = decoded["handle"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        reciever_channel = self.server_state.get_channel_by_name(channel)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if reciever_channel == None: return make_channel_not_found(sender_addr)
+        if receiver_handle == None: return make_handle_not_found(sender_addr)
+
+        if not reciever_channel.is_admin(sender): return make_failed_permissions(sender_addr)
+        if not reciever_channel.is_admin_strict(sender):
+            return [Response("User already has member permissions. No need to demote"), [sender_addr]]
+        
+        reciever_channel.add_member(receiver)
+
+        return [
+            Response(str(reciever_channel) + sender.handle + " has demoted " + receiver.handle + " to the role of member." , [x.addr for x in reciever_channel.get_all() if x!=receiver]),
+            Response(str(reciever_channel) + sender.handle + " has promoted you to the role of member.", [receiver.addr])
+        ]
+
+    def __handle_leavec__(self, decoded: dict, sender_addr: tuple):
+        pass
+
+    def __handle_kick__(self, decoded: dict, sender_addr: tuple):
+        pass
+
+    def __handle_deletec__(self, decoded: dict, sender_addr: tuple):
+        pass

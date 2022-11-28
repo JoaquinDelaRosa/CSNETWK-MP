@@ -10,13 +10,13 @@ class ChannelModel:
         self.invitees: list[ClientModel] = []
 
     def invite(self, user: ClientModel) -> bool: 
-        if self.has_pseudo(user):
+        if self.is_recognized(user):
             return False 
 
         self.invitees.append(user)
         return True 
 
-    def has_pseudo(self, user: ClientModel) -> bool:
+    def is_recognized(self, user: ClientModel) -> bool:
         return user in self.admins or \
             user in self.members or \
             user in self.invitees or \
@@ -33,9 +33,25 @@ class ChannelModel:
     def is_invited(self, user: ClientModel) -> bool:
         return user in self.invitees
     
+    def is_member(self, user: ClientModel) -> bool:
+        return self.is_admin(user) or user in self.members or user == self.owner
+
+    def is_admin(self, user: ClientModel) -> bool:
+        return user in self.admins or user == self.owner
+
+    def is_member_strict(self, user: ClientModel) -> bool:
+        return user in self.members
+
+    def is_admin_strict(self, user: ClientModel) -> bool:
+        return user in self.admins
+    
     def add_member(self, user: ClientModel) -> bool:
         self.remove(user)
         self.members.append(user)
+
+    def add_admin(self, user: ClientModel) -> bool:
+        self.remove(user)
+        self.admins.append(user)
         
     def remove(self, user : ClientModel) -> bool:
         self.remove_from_invitees(user)
@@ -53,3 +69,6 @@ class ChannelModel:
     def remove_from_admins(self, user: ClientModel):
         if user in self.admins:
             self.admins.remove(user)
+
+    def __str__(self):
+        return "<" + self.name + ">" 
