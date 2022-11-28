@@ -192,3 +192,23 @@ class Deletec(Command):
             "command": "deletec",
             "channel": self.channel,
         }
+
+class Block(Command):
+    def __init__(self, handle : str):
+        self.handle = handle 
+
+    def get_payload(self): 
+        return {
+            "command": "block",
+            "handle": self.handle
+        }
+
+class Unblock(Command):
+    def __init__(self, handle : str):
+        self.handle = handle 
+
+    def get_payload(self): 
+        return {
+            "command": "unblock",
+            "handle": self.handle
+        }

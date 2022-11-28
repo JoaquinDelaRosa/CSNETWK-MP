@@ -51,6 +51,11 @@ class ServerState:
             return False 
         self.channels[channel.name] = channel
 
+    def mutate_client(self, client: ClientModel) -> bool: 
+        if client is None: 
+            return False 
+        self.clients[client.handle] = client
+
     def get_clients(self) -> dict:
         return self.clients
 
