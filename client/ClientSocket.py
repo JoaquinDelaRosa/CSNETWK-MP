@@ -60,6 +60,7 @@ class ClientSocket:
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_connect_state__(addr)
+            self.listen()
             return
 
         except socket.timeout as err:
@@ -73,7 +74,6 @@ class ClientSocket:
             self.__update_to_disconnect_state__()
             return 
         
-        self.listen()
     
     def __confirm_disconnection__(self):
         try:
