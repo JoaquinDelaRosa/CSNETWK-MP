@@ -64,6 +64,12 @@ class ClientSocket:
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
             return 
+
+        except:
+            # Graceful exit. 
+            self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
+            self.__update_to_disconnect_state__()
+            return 
         
         self.listen()
     
@@ -74,6 +80,10 @@ class ClientSocket:
             self.__update_to_disconnect_state__()
 
         except socket.timeout as err:
+            self.logger.log("Request Timed Out")
+            return 
+        
+        except:
             self.logger.log("Request Timed Out")
             return 
 
