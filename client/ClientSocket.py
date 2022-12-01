@@ -43,6 +43,7 @@ class ClientSocket:
 
     def listen(self):
         if self.output_thread is None:
+            self.client_socket.settimeout(1)
             self.output_thread = threading.Thread(target=self.__listen__)
             self.output_thread.start()
 
@@ -59,6 +60,7 @@ class ClientSocket:
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_connect_state__(addr)
+            return
 
         except socket.timeout as err:
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
@@ -78,6 +80,7 @@ class ClientSocket:
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_disconnect_state__()
+            return 
 
         except socket.timeout as err:
             self.logger.log("Request Timed Out")
@@ -92,6 +95,7 @@ class ClientSocket:
         self.connected_port = int(str(addr[1]))
 
     def __update_to_disconnect_state__(self):
+        self.client_socket.settimeout(1)
         self.connected_ip_address = None 
         self.connected_port = None
         self.output_thread = None
