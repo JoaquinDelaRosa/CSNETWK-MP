@@ -157,7 +157,7 @@ class CommandHandler:
         if sender == None: return make_unknown_sender(sender_addr)
         
         if channel_model.is_member(sender):
-            return [Response("You are already a member"), [sender.addr]]
+            return [Response("You are already a member", [sender.addr])]
 
         if not channel_model.is_invited(sender):
             return [Response("You are not invited to this channel",[sender.addr])]
