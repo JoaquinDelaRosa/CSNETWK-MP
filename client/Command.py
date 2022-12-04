@@ -192,3 +192,52 @@ class Deletec(Command):
             "command": "deletec",
             "channel": self.channel,
         }
+
+class Block(Command):
+    def __init__(self, handle : str):
+        self.handle = handle 
+
+    def get_payload(self): 
+        return {
+            "command": "block",
+            "handle": self.handle
+        }
+
+class Unblock(Command):
+    def __init__(self, handle : str):
+        self.handle = handle 
+
+    def get_payload(self): 
+        return {
+            "command": "unblock",
+            "handle": self.handle
+        }
+
+class List(Command):
+    def __init__(self):
+        Command.__init__(self, "list")
+
+    def get_payload(self):
+        return {
+            "command": "list"
+        }
+
+class Listch(Command):
+    def __init__(self, channel : str):
+        self.channel = channel
+    
+    def get_payload(self):
+    
+        return {
+            "command": "listch",
+            "channel": self.channel
+        }
+
+class Listblk(Command):
+    def __init__(self):
+        Command.__init__(self, "listblk")
+
+    def get_payload(self): 
+        return {
+            "command": "listblk"
+        }

@@ -6,8 +6,8 @@ from Validation import *
 
 
 class CommandHandler: 
-    def __init__(self, server_state : ServerState):
-        self.server_state = server_state
+    def __init__(self):
+        self.server_state = ServerState()
 
     def process(self, data : bytes, addr : tuple) -> Response:
         decoded : dict= ast.literal_eval(data.decode())
@@ -51,8 +51,19 @@ class CommandHandler:
             return self.__handle_kick__(decoded, addr)
         elif command == "deletec":
             return self.__handle_deletec__(decoded, addr)
+        elif command == "list":
+            return self.__handle_list__(decoded, addr)
+        elif command == "listch":
+            return self.__handle_listch__(decoded, addr)
+        elif command == "listblk":
+            return self.__handle_listblk__(decoded, addr)
 
-        return [Response("Unknown command recieved"), [addr]]
+        elif command == "block":
+            return self.__handle_block__(decoded, addr)
+        elif command == "unblock":
+            return self.__handle_unblock__(decoded, addr)
+
+        return [Response("Unknown command received"), [addr]]
     
     def __handle_join__(self, decoded : dict, sender_addr : tuple):
         return [Response('Connection to the Message Board Server is successful!', [sender_addr])]
@@ -85,17 +96,17 @@ class CommandHandler:
         if not "message" in decoded: make_bad_form_response("message", sender_addr)
         
         message = decoded["message"]
-        reciever_handle = decoded["handle"]
+        receiver_handle = decoded["handle"]
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        reciever = self.server_state.get_client_by_handle(reciever_handle)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if reciever == None: return make_handle_not_found(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
         
         return [
-            Response("[To " + reciever.handle + "]: " + message, [sender.addr]),
-            Response("[From " + sender.handle + "]: " + message, [reciever.addr])
+            Response("[To " + receiver.handle + "]: " + message, [sender.addr]),
+            Response("[From " + sender.handle + "]: " + message, [receiver.addr])
         ]
     
     def __handle_channels__(self, decoded: dict, sender_addr: tuple):
@@ -119,10 +130,10 @@ class CommandHandler:
         receiver_handle = decoded["handle"]
 
         sender = self.server_state.get_client_by_addr(sender_addr)
-        reciever = self.server_state.get_client_by_handle(receiver_handle)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
 
         if sender == None: return make_unknown_sender(sender_addr)
-        if reciever == None: return make_handle_not_found(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
 
         channel_model = self.server_state.get_channel_by_name(channel)
         if channel_model == None: return make_channel_not_found(sender_addr)
@@ -133,8 +144,8 @@ class CommandHandler:
         if channel_model.invite(self.server_state.clients[receiver_handle]):
             self.server_state.mutate_channel(channel_model)
             return [
-                Response(str(channel) + ": Invited " + reciever.handle, [sender.addr]),
-                Response(sender.handle + " is inviting you to " + str(channel), [reciever.addr])
+                Response(str(channel) + ": Invited " + receiver.handle, [sender.addr]),
+                Response(sender.handle + " is inviting you to " + str(channel), [receiver.addr])
             ]
 
         return [Response("Error: Invitation failed.", [sender_addr])]
@@ -152,7 +163,7 @@ class CommandHandler:
         if sender == None: return make_unknown_sender(sender_addr)
         
         if channel_model.is_member(sender):
-            return [Response("You are already a member"), [sender.addr]]
+            return [Response("You are already a member", [sender.addr])]
 
         if not channel_model.is_invited(sender):
             return [Response("You are not invited to this channel",[sender.addr])]
@@ -332,4 +343,70 @@ class CommandHandler:
 
         return [
             Response(str(receiver_channel) + "Channel has been deleted" , [x.addr for x in members]),
+        ]
+
+    def __handle_list__(self, decoded: dict, sender_addr: tuple):
+        message: str = self.server_state.get_user_list_message()
+        return [Response(message, [sender_addr])]
+
+    def __handle_listch__(self, decoded: dict, sender_addr: tuple):
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        channel = decoded["channel"]
+
+        channel_obj = self.server_state.get_channel_by_name(channel).name  
+        sender = self.server_state.get_client_by_addr(sender_addr)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if channel_obj == None: return make_channel_not_found(sender_addr)
+
+        message: str = self.server_state.get_channel_list_user_message(channel_obj)
+        return [Response(message, [sender_addr])]
+        
+    def __handle_listblk__(self, decoded: dict, sender_addr: tuple):
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        if sender == None: return make_unknown_sender(sender_addr)
+
+        message: str = self.server_state.get_user_listblk_message(sender.handle)
+
+        return [Response(message,[sender_addr])]
+
+    def __handle_block__(self, decoded: dict, sender_addr: tuple):
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
+        receiver_handle = decoded["handle"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
+        if sender == receiver: 
+            return [Response("You cannot block yourself.", [sender.addr])]
+        if sender.is_blocked(receiver):
+            return [Response("You have already blocked this user.", [sender.addr])]
+
+        sender.block(receiver)
+        self.server_state.mutate_client(sender)
+        return [
+            Response("Successfully blocked " + receiver.handle + ".", [sender.addr])
+        ]
+
+    def __handle_unblock__(self, decoded: dict, sender_addr: tuple):
+        if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
+        receiver_handle = decoded["handle"]
+
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        receiver = self.server_state.get_client_by_handle(receiver_handle)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if receiver == None: return make_handle_not_found(sender_addr)
+        if sender == receiver: 
+            return [Response("You cannot unblock yourself.", [sender.addr])]
+        if not sender.is_blocked(receiver):
+            return [Response("This user has not been blocked by you.", [sender.addr])]
+
+        sender.unblock(receiver)
+        self.server_state.mutate_client(sender)
+
+        return [
+            Response("Successfully unblocked " + receiver.handle + ".", [sender.addr])
         ]

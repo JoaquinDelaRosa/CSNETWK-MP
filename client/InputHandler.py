@@ -50,6 +50,16 @@ class InputHandler:
             return self.__parse_kick_command__(toks)
         if command == "/deletec":
             return self.__parse_deletec_command__(toks)
+        if command == "/list":
+            return self.__parse_list_command__(toks)
+        if command == "/listch":
+            return self.__parse_listch_command__(toks)
+        if command == "/listblk":
+            return self.__parse_listblk_command__(toks)
+        if command == "/block":
+            return self.__parse_block_command__(toks)
+        if command == "/unblock":
+            return self.__parse_unblock_command__(toks)
 
         return self.__handle_command_not_found_error__()
     
@@ -119,6 +129,13 @@ class InputHandler:
             +------------------------------+-----------------------------+
             | /deletec <channel>           | Requires owner perms:       |
             |                              | delete a channel            |
+            +------------------------------+-----------------------------+
+            | /block <handle>              | BLock a user. You will not  |
+            |                              | receive any messages from   |
+            |                              | them                        |
+            +------------------------------+-----------------------------+
+            | /unblock <handle>            | UnbLock a user. You will    |
+            |                              | receive messages from them  |
             +------------------------------+-----------------------------+
             | /?                           | Request command help        |
             +------------------------------+-----------------------------+
@@ -287,4 +304,48 @@ class InputHandler:
             return self.__handle_bad_syntax_error__()
         
         return Deletec(channel) 
+    
+    def __parse_list_command__(self, toks: list):
+        if len(toks) != 1:
+            return self.__handle_bad_syntax_error__()
+        
+        return List()
+
+    def __parse_listch_command__(self, toks: list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        channel = toks[1]
+        if len(channel) == 0:
+            return self.__handle_bad_syntax_error__()
+
+        return Listch(channel)
+
+    def __parse_listblk_command__(self, toks: list):
+        if len(toks) != 1:
+            return self.__handle_bad_syntax_error__()
+        
+        return Listblk() 
+
+    def __parse_block_command__(self, toks : list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        handle = toks[1]
+
+        if len(handle) == 0:
+            return self.__handle_bad_syntax_error__()
+
+        return Block(handle)
+
+    def __parse_unblock_command__(self, toks : list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        handle = toks[1]
+
+        if len(handle) == 0:
+            return self.__handle_bad_syntax_error__()
+
+        return Unblock(handle)
     

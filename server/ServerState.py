@@ -2,6 +2,8 @@ from ChannelModel import *
 from ClientModel import * 
 
 class ServerState:
+
+    current_client_id_ = 0
     clients: dict[str, ClientModel] = {}
     channels: dict[str, ChannelModel] = {}
 
@@ -9,7 +11,8 @@ class ServerState:
         if self.is_recognized_handle(handle):
             return False 
 
-        self.clients[handle] = ClientModel(addr, handle)
+        self.clients[handle] = ClientModel(addr, handle, self.current_client_id_)
+        self.current_client_id_ += 1
         return True
     
     def try_create_channel(self, channel: str, addr: tuple) -> bool:
@@ -51,6 +54,11 @@ class ServerState:
             return False 
         self.channels[channel.name] = channel
 
+    def mutate_client(self, client: ClientModel) -> bool: 
+        if client is None: 
+            return False 
+        self.clients[client.handle] = client
+
     def get_clients(self) -> dict:
         return self.clients
 
@@ -83,3 +91,30 @@ class ServerState:
             return self.channels[name]
         
         return None
+
+    def get_user_list_message(self) -> str:
+        users = [c.handle for c in self.clients.values()]
+        users.sort()
+
+        return "Users:\n" + "\n".join(users)
+    
+    def get_channel_list_user_message(self, name:str) -> str:
+        users = [c.handle for c in self.channels[name].get_all()]
+        users.sort()
+
+        return "Users in "+name+":\n"+"\n".join(users) 
+
+    def get_user_listblk_message(self, name:str) -> str:
+        users_ids = [c for c in self.clients[name].block_list]
+        users = []
+
+        #There has to be a list comprehension alternative to this. 
+        for i in self.clients.values():
+            for j in users_ids:
+                if (i.id == j):
+                    users.append(i.handle)
+
+        users.sort()
+
+        return "Blocked Users:\n" + "\n".join(users)
+        
