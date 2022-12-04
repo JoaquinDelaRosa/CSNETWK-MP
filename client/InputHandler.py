@@ -50,7 +50,12 @@ class InputHandler:
             return self.__parse_kick_command__(toks)
         if command == "/deletec":
             return self.__parse_deletec_command__(toks)
-        
+        if command == "/list":
+            return self.__parse_list_command__(toks)
+        if command == "/listch":
+            return self.__parse_listch_command__(toks)
+        if command == "/listblk":
+            return self.__parse_listblk_command__(toks)
         if command == "/block":
             return self.__parse_block_command__(toks)
         if command == "/unblock":
@@ -300,6 +305,28 @@ class InputHandler:
         
         return Deletec(channel) 
     
+    def __parse_list_command__(self, toks: list):
+        if len(toks) != 1:
+            return self.__handle_bad_syntax_error__()
+        
+        return List()
+
+    def __parse_listch_command__(self, toks: list):
+        if len(toks) != 2:
+            return self.__handle_bad_syntax_error__()
+        
+        channel = toks[1]
+        if len(channel) == 0:
+            return self.__handle_bad_syntax_error__()
+
+        return Listch(channel)
+
+    def __parse_listblk_command__(self, toks: list):
+        if len(toks) != 1:
+            return self.__handle_bad_syntax_error__()
+        
+        return Listblk() 
+
     def __parse_block_command__(self, toks : list):
         if len(toks) != 2:
             return self.__handle_bad_syntax_error__()

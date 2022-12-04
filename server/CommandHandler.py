@@ -51,6 +51,12 @@ class CommandHandler:
             return self.__handle_kick__(decoded, addr)
         elif command == "deletec":
             return self.__handle_deletec__(decoded, addr)
+        elif command == "list":
+            return self.__handle_list__(decoded, addr)
+        elif command == "listch":
+            return self.__handle_listch__(decoded, addr)
+        elif command == "listblk":
+            return self.__handle_listblk__(decoded, addr)
 
         elif command == "block":
             return self.__handle_block__(decoded, addr)
@@ -338,6 +344,31 @@ class CommandHandler:
         return [
             Response(str(receiver_channel) + "Channel has been deleted" , [x.addr for x in members]),
         ]
+
+    def __handle_list__(self, decoded: dict, sender_addr: tuple):
+        message: str = self.server_state.get_user_list_message()
+        return [Response(message, [sender_addr])]
+
+    def __handle_listch__(self, decoded: dict, sender_addr: tuple):
+        if not "channel" in decoded: make_bad_form_response("channel", sender_addr)
+        channel = decoded["channel"]
+
+        channel_obj = self.server_state.get_channel_by_name(channel).name  
+        sender = self.server_state.get_client_by_addr(sender_addr)
+
+        if sender == None: return make_unknown_sender(sender_addr)
+        if channel_obj == None: return make_channel_not_found(sender_addr)
+
+        message: str = self.server_state.get_channel_list_user_message(channel_obj)
+        return [Response(message, [sender_addr])]
+        
+    def __handle_listblk__(self, decoded: dict, sender_addr: tuple):
+        sender = self.server_state.get_client_by_addr(sender_addr)
+        if sender == None: return make_unknown_sender(sender_addr)
+
+        message: str = self.server_state.get_user_listblk_message(sender.handle)
+
+        return [Response(message,[sender_addr])]
 
     def __handle_block__(self, decoded: dict, sender_addr: tuple):
         if not "handle" in decoded: make_bad_form_response("handle", sender_addr)

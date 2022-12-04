@@ -28,8 +28,7 @@ class ChannelModel:
         l.extend(self.members)
 
         return l
-        
-
+     
     def is_invited(self, user: ClientModel) -> bool:
         return user in self.invitees
     

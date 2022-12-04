@@ -91,3 +91,30 @@ class ServerState:
             return self.channels[name]
         
         return None
+
+    def get_user_list_message(self) -> str:
+        users = [c.handle for c in self.clients.values()]
+        users.sort()
+
+        return "Users:\n" + "\n".join(users)
+    
+    def get_channel_list_user_message(self, name:str) -> str:
+        users = [c.handle for c in self.channels[name].get_all()]
+        users.sort()
+
+        return "Users in "+name+":\n"+"\n".join(users) 
+
+    def get_user_listblk_message(self, name:str) -> str:
+        users_ids = [c for c in self.clients[name].block_list]
+        users = []
+
+        #There has to be a list comprehension alternative to this. 
+        for i in self.clients.values():
+            for j in users_ids:
+                if (i.id == j):
+                    users.append(i.handle)
+
+        users.sort()
+
+        return "Blocked Users:\n" + "\n".join(users)
+        
