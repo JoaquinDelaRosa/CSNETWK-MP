@@ -6,7 +6,7 @@ from InputHandler import *
 from Logger import * 
 
 def input_thread(client_socket: ClientSocket):
-    print("CSNETWK MP v0.1")
+    print("CSNETWK MP v1.0")
     logger = Logger()
     input_handler = InputHandler(logger=logger)
     command_handler = CommandHandler(logger=logger, client_socket=client_socket)
