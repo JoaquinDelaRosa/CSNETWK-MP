@@ -54,6 +54,8 @@ class ClientSocket:
                 self.logger.log(get_response_message(res))
             except socket.timeout:
                 continue
+            except:
+                print("Server took too long. It might be down.") # Gracefully ignore when server is down.
     
     def __confirm_connection__(self):
         try:
