@@ -104,11 +104,10 @@ class ServerState:
 
         return "Users in "+name+":\n"+"\n".join(users) 
 
-    def get_user_listblk_message(self, name:str) -> str:
+    def get_user_listblk_message(self, name: str) -> str:
         users_ids = [c for c in self.clients[name].block_list]
         users = []
 
-        #There has to be a list comprehension alternative to this. 
         for i in self.clients.values():
             for j in users_ids:
                 if (i.id == j):
