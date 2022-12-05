@@ -30,11 +30,11 @@ class ServerState:
         return True
 
     def remove_client(self, addr : tuple) : 
-        handle = self.get_client_by_addr(addr)
-        if handle == None:
+        client = self.get_client_by_addr(addr)
+        if client == None:
             return 
-            
-        self.clients.pop(handle)
+
+        self.clients.pop(client.handle)
     
     def is_recognized_handle(self, handle: str) -> bool:
         if handle is None:
