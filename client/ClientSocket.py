@@ -1,11 +1,12 @@
 import socket
 import threading
+import json 
 
 from Logger import *
 from Utils import * 
 
 def encode(dict : dict) -> str:
-    return str(dict)
+    return json.dumps(dict)
 
 class ClientSocket:
 
