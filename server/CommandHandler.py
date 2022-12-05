@@ -70,11 +70,14 @@ class CommandHandler:
     
     def __handle_leave__(self, decoded: dict, sender_addr : tuple):
         self.server_state.remove_client(sender_addr)
-        
+
         return [Response("Connection closed. Thank you!", [sender_addr])]
 
     def __handle_register__(self, decoded : dict, sender_addr: tuple):
         if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
+        
+        if self.server_state.get_client_by_addr(sender_addr) != None:
+            return [Response("Error: A user already exists with this address."), [sender_addr]]
 
         handle = decoded["handle"]
         if self.server_state.try_register_handle(handle, sender_addr):
