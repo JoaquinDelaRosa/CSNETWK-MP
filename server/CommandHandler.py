@@ -69,6 +69,8 @@ class CommandHandler:
         return [Response('Connection to the Message Board Server is successful!', [sender_addr])]
     
     def __handle_leave__(self, decoded: dict, sender_addr : tuple):
+        self.server_state.remove_client(sender_addr)
+        
         return [Response("Connection closed. Thank you!", [sender_addr])]
 
     def __handle_register__(self, decoded : dict, sender_addr: tuple):

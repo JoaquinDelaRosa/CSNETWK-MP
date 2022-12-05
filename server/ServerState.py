@@ -28,6 +28,13 @@ class ServerState:
         
         self.channels[channel] = ChannelModel(owner, channel)
         return True
+
+    def remove_client(self, addr : tuple) : 
+        handle = self.get_client_by_addr(addr)
+        if handle == None:
+            return 
+            
+        self.clients.pop(handle)
     
     def is_recognized_handle(self, handle: str) -> bool:
         if handle is None:
