@@ -38,8 +38,13 @@ class ClientSocket:
         if payload is None or self.connected_ip_address is None or self.connected_port is None:
             self.logger.log("Error: Request failed. Please connect to the server first.")
             return 
-
-        self.client_socket.sendto(encode(payload).encode(), (self.connected_ip_address, self.connected_port))
+        
+        try: 
+            self.client_socket.sendto(encode(payload).encode(), (self.connected_ip_address, self.connected_port))
+        except: 
+            # Graceful exit.
+            self.logger.log("Error: Request failed. Please check the connection to the server.")
+            return 
 
     def listen(self):
         if self.output_thread is None:
@@ -54,6 +59,7 @@ class ClientSocket:
                 self.logger.log(get_response_message(res))
             except socket.timeout:
                 continue
+
             except:
                 print("Server took too long. It might be down.") # Gracefully ignore when server is down.
     
