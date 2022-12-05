@@ -93,6 +93,9 @@ class InputHandler:
             | /msg <handle> <message>      | Send direct message to a    |
             |                              | single handle               |
             +------------------------------+-----------------------------+
+            | /list                        | Shows a list of all clients |
+            |                              | in the server.              |
+            +------------------------------+-----------------------------+
             | /channels                    | Display a list of all the   |
             |                              | channels in the server      |
             +------------------------------+-----------------------------+
@@ -130,12 +133,18 @@ class InputHandler:
             | /deletec <channel>           | Requires owner perms:       |
             |                              | delete a channel            |
             +------------------------------+-----------------------------+
+            | /listch <channel>            | Shows a list of all clients |
+            |                              | in the channel              |
+            +------------------------------+-----------------------------+
             | /block <handle>              | BLock a user. You will not  |
             |                              | receive any messages from   |
             |                              | them                        |
             +------------------------------+-----------------------------+
             | /unblock <handle>            | UnbLock a user. You will    |
             |                              | receive messages from them  |
+            +------------------------------+-----------------------------+
+            | /listblk                     | Shows a list of all clients |
+            |                              | that you have blocked       |
             +------------------------------+-----------------------------+
             | /?                           | Request command help        |
             +------------------------------+-----------------------------+
