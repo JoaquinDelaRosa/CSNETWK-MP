@@ -77,7 +77,7 @@ class CommandHandler:
         if not "handle" in decoded: make_bad_form_response("handle", sender_addr)
         
         if self.server_state.get_client_by_addr(sender_addr) != None:
-            return [Response("Error: A user already exists with this address.", [sender_addr])]
+            return [Response("Error: You are already regisetered to an account. Cannot register another user.", [sender_addr])]
 
         handle = decoded["handle"]
         if self.server_state.try_register_handle(handle, sender_addr):
