@@ -104,7 +104,7 @@ class ClientSocket:
             self.__lock__()
 
 
-            self.logger.log("Error: Unknown error when trying to connect to Message Board Server.")
+            self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
             self.__update_to_disconnect_state__()
             return False
         
