@@ -2,9 +2,11 @@
 
 Additional Features implemented:
 
-## Requiered Libraries
+## Required Libraries
 socket
 ast
+threading
+json
 
 ## Channel feature
 ```
@@ -28,3 +30,7 @@ ast
 /block <handle>                      ignores any incoming messages from <handle>. <handle> will be notified that they are blocked by the user.
 /unblock <handle>                    unblocks <handle> if they were blocked by the user. 
 ```
+
+
+#Note:
+When running, the server will typically send a JSON of the form {"message": <message here>}. 
