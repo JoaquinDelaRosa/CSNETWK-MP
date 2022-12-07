@@ -35,6 +35,9 @@ class ServerState:
             return 
 
         self.clients.pop(client.handle)
+
+        for channel in self.channels.values():
+            channel.remove(client)
     
     def is_recognized_handle(self, handle: str) -> bool:
         if handle is None:
