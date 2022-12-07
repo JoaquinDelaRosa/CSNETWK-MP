@@ -15,21 +15,26 @@ class ServerSocket:
     def listen(self):
         print("Listening...")
         while True:
-            (data, addr) = self.server_socket.recvfrom(1024)
-            responses = self.process(data, addr)
-            for response in responses:
-                for target in response.targets: 
 
-                    if ALLOW_BLOCKING_PROTOCOL:
-                        state = self.__get_state__()
-                        sender = state.get_client_by_addr(addr)
-                        receiver = state.get_client_by_addr(target)
-                        
-                        if not sender is None and not receiver is None: 
-                            if receiver.is_blocked(sender):
-                                continue
+            try: 
+                (data, addr) = self.server_socket.recvfrom(1024)
+                responses = self.process(data, addr)
+                for response in responses:
+                    for target in response.targets: 
 
-                    self.server_socket.sendto(response.__bytes__(), target)
+                        if ALLOW_BLOCKING_PROTOCOL:
+                            state = self.__get_state__()
+                            sender = state.get_client_by_addr(addr)
+                            receiver = state.get_client_by_addr(target)
+                            
+                            if not sender is None and not receiver is None: 
+                                if receiver.is_blocked(sender):
+                                    continue
+
+                        self.server_socket.sendto(response.__bytes__(), target)
+            except:
+                # Graceful exit
+                continue 
 
     def process(self, data, addr) -> list[Response]:
         print("Received from IP " + str(addr[0]) + " port=" + str(addr[1]))

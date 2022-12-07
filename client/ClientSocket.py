@@ -20,6 +20,8 @@ class ClientSocket:
         self.connected_port = None
         self.output_thread = None
 
+        self.state_flag = False 
+
     def join(self, ip_address : str, port : int):
         self.connected_ip_address = ip_address
         self.connected_port = port
@@ -55,8 +57,11 @@ class ClientSocket:
 
     def __listen__(self):
         while not self.connected_ip_address is None and not self.connected_port is None : 
+            self.state_flag = False
+
             try:
                 (res, addr) = self.client_socket.recvfrom(1024)
+                self.state_flag = True
                 
                 self.logger.log(get_response_message(res))
 
@@ -74,12 +79,20 @@ class ClientSocket:
             return True
 
         except socket.timeout as err:
+            if self.state_flag:
+                # Already connected. No need to do anything
+                return True 
+
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
 
             return False
 
         except:
+            if self.state_flag:
+                # Already connected. No need to do anything
+                return True 
+
             # Graceful exit. 
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
             self.__update_to_disconnect_state__()
@@ -95,6 +108,9 @@ class ClientSocket:
             return 
 
         except socket.timeout as err:
+            if self.state_flag:
+                self.__update_to_disconnect_state__()
+                return True 
             self.logger.log("Request Timed Out")
             return 
         
