@@ -20,22 +20,30 @@ class ClientSocket:
         self.connected_port = None
         self.output_thread = None
 
-        self.state_flag = False 
+        self.joining_state = False 
+        self.leaving_state = False
 
     def join(self, ip_address : str, port : int):
+        self.joining_state = True
         self.connected_ip_address = ip_address
         self.connected_port = port
 
         self.send({'command' : 'join'})
         if self.__confirm_connection__():
             self.listen()
+        
+        self.joining_state = False
 
     def leave(self):
+        self.leaving_state = True 
+
         if self.connected_ip_address is None or self.connected_port is None:
             self.logger.log("Error: Disconnection failed. Please connect to the server first.")
         else: 
             self.send({'command': 'leave'} )
             self.__confirm_disconnection__()
+        
+        self.leaving_state = False
     
     def send(self, payload):
         if payload is None or self.connected_ip_address is None or self.connected_port is None:
@@ -57,12 +65,15 @@ class ClientSocket:
 
     def __listen__(self):
         while not self.connected_ip_address is None and not self.connected_port is None : 
-            self.state_flag = False
-
             try:
                 (res, addr) = self.client_socket.recvfrom(1024)
-                self.state_flag = True
-                
+
+                if self.joining_state:
+                    continue 
+                if self.leaving_state:
+                    self.__update_to_disconnect_state__()
+                    continue 
+
                 self.logger.log(get_response_message(res))
 
             except socket.timeout:
@@ -79,20 +90,12 @@ class ClientSocket:
             return True
 
         except socket.timeout as err:
-            if self.state_flag:
-                # Already connected. No need to do anything
-                return True 
-
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
 
             return False
 
         except:
-            if self.state_flag:
-                # Already connected. No need to do anything
-                return True 
-
             # Graceful exit. 
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
             self.__update_to_disconnect_state__()
@@ -108,9 +111,9 @@ class ClientSocket:
             return 
 
         except socket.timeout as err:
-            if self.state_flag:
-                self.__update_to_disconnect_state__()
-                return True 
+            if self.connected_ip_address is None:
+                return
+                
             self.logger.log("Request Timed Out")
             return 
         
