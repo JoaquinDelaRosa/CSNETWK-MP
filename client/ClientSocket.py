@@ -95,6 +95,7 @@ class ClientSocket:
             return 
         
         except:
+            self.logger.log("Request Timed Out")
             return 
 
     def __update_to_connect_state__(self, addr):
