@@ -1,3 +1,5 @@
+# Version 1.0. Timestamp 11:11 PM 12/7/2022
+
 import threading
 
 from ClientSocket import *
