@@ -65,13 +65,14 @@ class ClientSocket:
             try:
                 (res, addr) = self.client_socket.recvfrom(1024)
                 
+                self.__unlock__()
                 if self.lock:
                     continue
-
+                
                 self.__lock__()
                 self.logger.log(get_response_message(res))
                 self.__unlock__()
-                
+
             except socket.timeout:
                 continue
 
