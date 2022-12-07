@@ -19,13 +19,6 @@ class ClientSocket:
         self.connected_ip_address = None 
         self.connected_port = None
         self.output_thread = None
-        self.lock = False               # Thread locking
-
-    def __lock__(self):
-        self.lock = True 
-
-    def __unlock__(self):
-        self.lock = False 
 
     def join(self, ip_address : str, port : int):
         self.connected_ip_address = ip_address
@@ -65,13 +58,7 @@ class ClientSocket:
             try:
                 (res, addr) = self.client_socket.recvfrom(1024)
                 
-                self.__unlock__()
-                if self.lock:
-                    continue
-                
-                self.__lock__()
                 self.logger.log(get_response_message(res))
-                self.__unlock__()
 
             except socket.timeout:
                 continue
@@ -81,56 +68,34 @@ class ClientSocket:
     
     def __confirm_connection__(self):
         try:
-            self.__lock__()
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_connect_state__(addr)
             return True
 
         except socket.timeout as err:
-            self.__unlock__()
-            if self.lock: 
-                return 
-            self.__lock__()
-
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
-            self.__unlock__()
 
             return False
 
         except:
             # Graceful exit. 
-            self.__unlock__()
-            if self.lock: 
-                return 
-            self.__lock__()
-
-
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
             self.__update_to_disconnect_state__()
-            self.__unlock__()
 
             return False
         
     
     def __confirm_disconnection__(self):
         try:
-            self.__lock__()
             (res, addr) = self.client_socket.recvfrom(1024)
             self.logger.log(get_response_message(res))
             self.__update_to_disconnect_state__()
             return 
 
         except socket.timeout as err:
-            self.__unlock__()
-            if self.lock: 
-                return 
-            self.__lock__()
-
             self.logger.log("Request Timed Out")
-            self.__unlock__()
-
             return 
         
         except:
