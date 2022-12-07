@@ -48,7 +48,6 @@ class ClientSocket:
             return 
         
         try: 
-            self.__unlock__()
             self.client_socket.sendto(encode(payload).encode(), (self.connected_ip_address, self.connected_port))
         except: 
             # Graceful exit.
@@ -71,6 +70,8 @@ class ClientSocket:
 
                 self.__lock__()
                 self.logger.log(get_response_message(res))
+                self.__unlock__()
+                
             except socket.timeout:
                 continue
 
@@ -91,9 +92,10 @@ class ClientSocket:
                 return 
             self.__lock__()
 
-
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number")
             self.__update_to_disconnect_state__()
+            self.__unlock__()
+
             return False
 
         except:
@@ -106,6 +108,8 @@ class ClientSocket:
 
             self.logger.log("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
             self.__update_to_disconnect_state__()
+            self.__unlock__()
+
             return False
         
     
@@ -124,6 +128,8 @@ class ClientSocket:
             self.__lock__()
 
             self.logger.log("Request Timed Out")
+            self.__unlock__()
+
             return 
         
         except:
